@@ -1,5 +1,6 @@
 # Use the Debian-based OpenJDK 17 image
-FROM eclipse-temurin:17.0.9_9-jre
+# FROM eclipse-temurin:17.0.9_9-jre
+FROM eclipse-temurin:21-jre
 
 # Set up proxy environment variables (if needed)
 
@@ -14,11 +15,6 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Clear proxy environment variables after installation
-ENV HTTP_PROXY=""
-ENV http_proxy=""
-ENV HTTPS_PROXY=""
-ENV https_proxy=""
-ENV PROXY_ADDRESS=""
 
 # Create the app directory
 RUN mkdir -p /app
@@ -36,6 +32,8 @@ ARG JAR_FILE
 
 # Copy the application JAR file to the container
 COPY ${JAR_FILE} /app/transaction-management-system.jar
+# COPY ./transaction-management-system-app/target/transaction-management-system-app*spring-boot.jar /app/transaction-management-system.jar
+# COPY .transaction-management-system-app*spring-boot.jar /app/transaction-management-system.jar
 
 # Switch back to root to adjust permissions
 USER root
