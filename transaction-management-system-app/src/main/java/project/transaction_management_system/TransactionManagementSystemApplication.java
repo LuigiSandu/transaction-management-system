@@ -1,4 +1,4 @@
-package groupId.transaction_management_system;
+package project.transaction_management_system;
 
 
 import org.springframework.boot.SpringApplication;

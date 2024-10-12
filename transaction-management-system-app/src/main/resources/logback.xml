@@ -50,21 +50,4 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-    <springProfile name="qa-mocks">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %black(%d{ISO8601}) %highlight(%-5level) %X{X-Correlation-ID} [%blue(%t)] %yellow(%C{1}): %msg%n%throwable
-                </pattern>
-            </encoder>
-        </appender>
-        <!-- LOG everything at INFO level -->
-        <!-- LOG "com.pps*" at TRACE level -->
-        <logger name="com.pps" level="trace" additivity="false">
-            <appender-ref ref="CONSOLE"/>
-        </logger>
-        <root level="info">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
 </configuration>
