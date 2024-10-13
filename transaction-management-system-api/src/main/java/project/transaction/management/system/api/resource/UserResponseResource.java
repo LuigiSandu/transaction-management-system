@@ -16,4 +16,6 @@ public class UserResponseResource {
     private String username;
     private String password;
     private String email;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
