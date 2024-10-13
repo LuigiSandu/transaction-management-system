@@ -20,6 +20,7 @@
     <modules>
         <module>transaction-management-system-app</module>
         <module>transaction-management-system-api</module>
+        <module>transaction-management-system-dao</module>
     </modules>
 
     <properties>
