@@ -1,6 +1,6 @@
 # Use the Debian-based OpenJDK 17 image
 # FROM eclipse-temurin:17.0.9_9-jre
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:17-jre
 
 # Set up proxy environment variables (if needed)
 
