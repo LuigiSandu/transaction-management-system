@@ -5,8 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class },
-scanBasePackages = {"project.transaction.management.system"})
+@SpringBootApplication(
+scanBasePackages = {"project.transaction.management.system",
+        "project.transaction.management.system.dao"})
 public class TransactionManagementSystemApplication {
 
     public static void main(String[] args) {

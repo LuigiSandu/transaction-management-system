@@ -24,8 +24,9 @@ public class UserController {
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserResponseResource> create(@RequestBody @Valid UserRequestResource request) {
-        log.info("test");
+        log.debug("Creating new User...");
         final UserResponseResource response = service.createUser(request);
+        log.debug("Successfully created new User...");
         return new ResponseEntity<UserResponseResource>(response, HttpStatus.CREATED);
     }
 

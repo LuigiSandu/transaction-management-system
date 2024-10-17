@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @ToString
+@Table(name ="user")
 public class UserEntity {
 
     @Id
@@ -32,4 +33,16 @@ public class UserEntity {
 
     @Column(name = "updated_at") // Column mapping for updatedAt
     private LocalDateTime updatedAt;
+
+    // Automatically set createdAt before insert
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now(); // Set the current time when the record is created
+    }
+
+    // Automatically update updatedAt before update
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now(); // Set the current time when the record is updated
+    }
 }
