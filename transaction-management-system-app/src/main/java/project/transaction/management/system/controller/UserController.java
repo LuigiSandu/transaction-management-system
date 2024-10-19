@@ -27,7 +27,7 @@ public class UserController {
         log.debug("Creating new User...");
         final UserResponseResource response = service.createUser(request);
         log.debug("Successfully created new User...");
-        return new ResponseEntity<UserResponseResource>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 }
