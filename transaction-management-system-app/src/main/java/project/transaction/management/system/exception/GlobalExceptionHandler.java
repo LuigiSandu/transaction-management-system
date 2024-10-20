@@ -20,16 +20,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
+    private static final String ERROR_RESPONSE_WITH_ID = "Error response {} with id {}";
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ MethodArgumentNotValidException.class })
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValid(final MethodArgumentNotValidException exception) {
-        final String errors = buildErrorMessages(exception);
+        final String errors = String.format(buildErrorMessages(exception));
+        final String uuid = UUID.randomUUID().toString();
+        log.info(ERROR_RESPONSE_WITH_ID, errors, uuid);
         return new ResponseEntity<>(
                 ExceptionResponse.builder()
                         .code(ErrorCode.BAD_REQUEST.name())
-                        .message(String.format(errors))
-                        .id(UUID.randomUUID().toString())
+                        .message(errors)
+                        .id(uuid)
                         .build(),
                 HttpStatus.BAD_REQUEST
         );
