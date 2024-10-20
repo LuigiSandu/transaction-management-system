@@ -7,11 +7,12 @@ import project.transaction.management.system.api.resource.UserResponseResource;
 import project.transaction.management.system.dao.entity.UserEntity;
 
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+public interface AccountMapper {
 
-    UserResponseResource fromEntity(UserEntity source);
+    UserResponseResource fromUserRequestResource(UserEntity source);
 
     UserRequestResource fromUserResponseResource(UserResponseResource source);
 
     UserEntity toEntity(UserRequestResource source);
+
 }

@@ -17,12 +17,13 @@ public class UserService {
     private final UserMapper mapper;
     private final UserRepository repository;
 
-    public UserResponseResource createUser(UserRequestResource request){
-        //check if user or pass already exists...
-        //create
+    public UserResponseResource createUser(UserRequestResource request) {
+        //TODO CHECK USERNAME PASS AND EMAIL? FOR UNIQUNESS
+        //TODO SAVE PASSWORD HASHED
+
         final UserEntity userEntity = mapper.toEntity(request);
         repository.save(userEntity);
-        UserResponseResource response = mapper.fromUserRequestResource(userEntity);
-        return response;
+
+        return mapper.fromEntity(userEntity);
     }
 }
