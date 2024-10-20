@@ -2,17 +2,15 @@ package project.transaction.management.system.mapper;
 
 
 import org.mapstruct.Mapper;
-import project.transaction.management.system.api.resource.UserRequestResource;
-import project.transaction.management.system.api.resource.UserResponseResource;
-import project.transaction.management.system.dao.entity.UserEntity;
+import project.transaction.management.system.api.resource.AccountRequestResource;
+import project.transaction.management.system.api.resource.AccountResponseResource;
+import project.transaction.management.system.dao.entity.AccountEntity;
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    UserResponseResource fromUserRequestResource(UserEntity source);
+    AccountResponseResource fromAccountEntity(AccountEntity source);
 
-    UserRequestResource fromUserResponseResource(UserResponseResource source);
-
-    UserEntity toEntity(UserRequestResource source);
+    AccountEntity toEntity(AccountRequestResource source);
 
 }

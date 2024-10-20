@@ -37,7 +37,7 @@ public class UserController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/{userId}}", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
+    @PutMapping(value = "/{userId}", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<UserResponseResource> login(@RequestBody @Valid UserRequestResource request,
             @PathVariable("userId") String userId) {
         return new ResponseEntity<>(null, HttpStatus.CREATED);

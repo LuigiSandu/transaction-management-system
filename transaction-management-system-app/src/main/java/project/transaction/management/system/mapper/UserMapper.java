@@ -11,7 +11,5 @@ public interface UserMapper {
 
     UserResponseResource fromEntity(UserEntity source);
 
-    UserRequestResource fromUserResponseResource(UserResponseResource source);
-
     UserEntity toEntity(UserRequestResource source);
 }

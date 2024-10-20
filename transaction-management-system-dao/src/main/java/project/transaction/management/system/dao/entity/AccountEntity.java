@@ -19,6 +19,9 @@ public class AccountEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented ID
     private Long id;
 
+    @Column(nullable = false) // Account type cannot be null
+    private String userId;
+
     @Column(nullable = false, unique = true) // Account number cannot be null and must be unique
     private String accountNumber;
 

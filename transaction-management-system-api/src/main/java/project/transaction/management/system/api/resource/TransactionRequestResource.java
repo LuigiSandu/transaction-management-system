@@ -17,6 +17,5 @@ public class TransactionRequestResource {
     private String transactionType;
     private Long amount;
     private LocalDate timestamp;
-//    private String status;
     private String description;
 }
