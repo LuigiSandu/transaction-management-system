@@ -19,14 +19,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF protection for development (new syntax)
+                .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF protection for development
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/transaction-management-system/api/v1/users/register").permitAll()
-                        .requestMatchers("/transaction-management-system/api/v1/users/login").permitAll() // Allow registration without authentication
+                        .requestMatchers("/transaction-management-system/api/v1/users/login").permitAll()
+                        .requestMatchers("/transaction-management-system/api/v1/users/**").authenticated() // Require authentication
                         .anyRequest().authenticated()  // All other requests need authentication
                 )
-                .httpBasic(withDefaults());  // Enable HTTP Basic authentication (new syntax)
-
+                .httpBasic(withDefaults());  // Enable HTTP Basic authentication
         return http.build();
     }
 

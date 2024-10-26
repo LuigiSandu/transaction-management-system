@@ -5,6 +5,10 @@ spring:
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  logging:
+    level:
+      org.springframework.security: DEBUG
+
   jpa:
     hibernate:
       ddl-auto: none

@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import project.transaction.management.system.api.resource.user.UserLoginRequestResource;
 import project.transaction.management.system.api.resource.user.UserRequestResource;
 import project.transaction.management.system.api.resource.user.UserResponseResource;
+import project.transaction.management.system.api.resource.user.UserUpdateRequestResource;
 import project.transaction.management.system.service.UserService;
 
 @RestController
@@ -40,10 +42,20 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK); // Use HttpStatus.OK for successful login
     }
 
-    @PutMapping(value = "/{userId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserResponseResource> login(@RequestBody @Valid UserRequestResource request,
-                                                      @PathVariable("userId") String userId) {
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
-    }
+    @PatchMapping(value = "/{userId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<UserResponseResource> update(
+            @PathVariable("userId") Long userId, // Assuming userId is of type Long
+            @RequestBody @Valid UserUpdateRequestResource request,
+            Authentication authentication // Access to user details
+    ) {
+        log.debug("Attempting to update user with ID: {}", userId);
 
+        // Call the service method to update the user details
+        UserResponseResource updatedUser = service.updateUser(userId, request, authentication);
+
+        log.info("Successfully updated User with ID: {}", updatedUser.getId());
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // Return OK for successful update
+    }
 }
+
+
