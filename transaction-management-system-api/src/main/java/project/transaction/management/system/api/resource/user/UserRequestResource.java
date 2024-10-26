@@ -1,4 +1,4 @@
-package project.transaction.management.system.api.resource;
+package project.transaction.management.system.api.resource.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +25,7 @@ public class UserRequestResource {
     private String password;
 
     @JsonProperty("email")
-    @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Invalid email address.")
+    @Pattern(regexp = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Invalid email address.")
     private String email;
 
 

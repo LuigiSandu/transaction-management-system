@@ -1,4 +1,4 @@
-package project.transaction.management.system.api.resource;
+package project.transaction.management.system.api.resource.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

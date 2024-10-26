@@ -1,9 +1,6 @@
 package project.transaction.management.system.exception;
 
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,12 +12,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+
 @RestControllerAdvice
 @Slf4j
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-    private static final String ERROR_RESPONSE_WITH_ID = "Error response {} with id {}";
+    private static final String ERROR_RESPONSE_WITH_ID = "Error response: \"{}\" with id {}";
 
     // Handle validation errors
     @ResponseStatus(HttpStatus.BAD_REQUEST)
