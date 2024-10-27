@@ -50,26 +50,30 @@ public class UserService {
         return mapper.fromEntity(userEntity); // You can also add the token to this response if needed
     }
 
-    public UserResponseResource updateUser(Long userId, UserUpdateRequestResource request, Authentication authentication) {
-        // Extract username or userId from authentication
-        String authenticatedUsername = authentication.getName();
+    public UserResponseResource updateUser(UserUpdateRequestResource request) {
+        Long userId = request.getUserId(); // Assume userId is included in the request
 
+        // Retrieve the existing user by ID
         UserEntity existingUser = repository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-        // Ensure the authenticated user is allowed to update this user
-        if (!existingUser.getUsername().equals(authenticatedUsername)) {
-            throw new SecurityException("You are not authorized to update this user.");
+        // Update the existing user fields with values from the request
+        if (request.getUsername() != null) {
+            existingUser.setUsername(request.getUsername()); // Set new username
+        }
+        if (request.getEmail() != null) {
+            existingUser.setEmail(request.getEmail()); // Set new email
+        }
+        if (request.getPassword() != null) {
+            existingUser.setPassword(passwordEncoder.encode(request.getPassword())); // Encode new password
         }
 
-        // Update fields as needed, for example:
-        existingUser.setEmail(request.getEmail());
-        // Update any other fields you want to allow for modification
         // Save the updated user entity
         UserEntity updatedUser = repository.save(existingUser);
 
         return mapper.fromEntity(updatedUser);
     }
+
 
     private void validateUserUniqueness(String username, String email) {
         if (repository.existsByUsername(username)) {

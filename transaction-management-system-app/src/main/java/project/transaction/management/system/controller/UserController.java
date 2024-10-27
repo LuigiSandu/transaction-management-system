@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import project.transaction.management.system.api.resource.user.UserLoginRequestResource;
 import project.transaction.management.system.api.resource.user.UserRequestResource;
@@ -42,16 +41,14 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK); // Use HttpStatus.OK for successful login
     }
 
-    @PatchMapping(value = "/{userId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/update", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserResponseResource> update(
-            @PathVariable("userId") Long userId, // Assuming userId is of type Long
-            @RequestBody @Valid UserUpdateRequestResource request,
-            Authentication authentication // Access to user details
+            @RequestBody @Valid UserUpdateRequestResource request
     ) {
-        log.debug("Attempting to update user with ID: {}", userId);
+        log.debug("Attempting to update user with ID: {}", request.getUserId());
 
         // Call the service method to update the user details
-        UserResponseResource updatedUser = service.updateUser(userId, request, authentication);
+        final UserResponseResource updatedUser = service.updateUser(request);
 
         log.info("Successfully updated User with ID: {}", updatedUser.getId());
         return new ResponseEntity<>(updatedUser, HttpStatus.OK); // Return OK for successful update
