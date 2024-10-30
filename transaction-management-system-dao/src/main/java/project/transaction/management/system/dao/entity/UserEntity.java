@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -37,7 +38,7 @@ public class UserEntity {
 
     // One user can have many accounts
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AccountEntity> accounts;
+    private Set<AccountEntity> accounts;
 
     // Automatically set createdAt before insert
     @PrePersist

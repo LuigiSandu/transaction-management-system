@@ -29,7 +29,7 @@ public class AccountRequestResource {
 
     @JsonProperty("name")
     @NotBlank(message = "Name is required")
-    @Size(max = 50, message = "Name must not exceed 50 characters")
+    @Size(min = 5, max = 50, message = "Name must be between 5 and 50 characters")
     private String name;
 
     @JsonProperty("balance")

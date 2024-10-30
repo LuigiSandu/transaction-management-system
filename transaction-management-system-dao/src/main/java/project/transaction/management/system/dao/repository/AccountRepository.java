@@ -6,7 +6,10 @@ import org.springframework.stereotype.Repository;
 import project.transaction.management.system.dao.entity.AccountEntity;
 import project.transaction.management.system.dao.entity.UserEntity;
 
+import java.util.Optional;
+
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
+    Optional<AccountEntity> findByAccountNumber(String accountNumber);
 }

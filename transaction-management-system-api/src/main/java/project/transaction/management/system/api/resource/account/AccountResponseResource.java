@@ -1,10 +1,12 @@
 package project.transaction.management.system.api.resource.account;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -12,12 +14,20 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AccountResponseResource {
 
+    @JsonProperty("account_number")
     private String accountNumber;
+
+    @JsonProperty("account_type")
     private String accountType;
+
+    @JsonProperty("name")
     private String name;
-    private Long balance;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+
+    @JsonProperty("balance")
+    private Double balance;
+
+    @JsonProperty("updated_at")
+    private LocalDateTime updatedAt; // Timestamp of when the account was last updated
 
 
 }
