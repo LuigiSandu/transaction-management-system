@@ -31,6 +31,9 @@ public class AccountEntity {
     @Column(name = "created_at", updatable = false) // Column mapping for createdAt
     private LocalDateTime createdAt;
 
+    @Column(nullable = false) // Account type cannot be null
+    private String name;
+
     @Column(name = "updated_at") // Column mapping for updatedAt
     private LocalDateTime updatedAt;
 

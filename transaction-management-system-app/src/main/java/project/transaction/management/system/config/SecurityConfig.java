@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .requestMatchers("/transaction-management-system/api/v1/users/register").permitAll()
                         .requestMatchers("/transaction-management-system/api/v1/users/login").permitAll()
                         .requestMatchers("/transaction-management-system/api/v1/users/update").permitAll() // Require authentication
+                        .requestMatchers("/transaction-management-system/api/v1/accounts/create").permitAll() // Require authentication
                         .anyRequest().authenticated() // All other requests need authentication
                 )
                 .httpBasic(withDefaults()); // Enable HTTP Basic authentication
