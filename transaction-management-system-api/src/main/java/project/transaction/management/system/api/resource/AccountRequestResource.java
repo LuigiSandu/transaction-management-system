@@ -21,7 +21,7 @@ public class AccountRequestResource {
     @JsonProperty("name")
     private String name;
     @JsonProperty("balance")
-    private Long balance;
+    private Double balance;
 
 
 }

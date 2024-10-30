@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,6 +34,10 @@ public class UserEntity {
 
     @Column(name = "updated_at") // Column mapping for updatedAt
     private LocalDateTime updatedAt;
+
+    // One user can have many accounts
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AccountEntity> accounts;
 
     // Automatically set createdAt before insert
     @PrePersist

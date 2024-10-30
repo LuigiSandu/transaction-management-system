@@ -19,9 +19,6 @@ public class AccountEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented ID
     private Long id;
 
-    @Column(nullable = false) // Account type cannot be null
-    private String userId;
-
     @Column(nullable = false, unique = true) // Account number cannot be null and must be unique
     private String accountNumber;
 
@@ -36,6 +33,10 @@ public class AccountEntity {
 
     @Column(name = "updated_at") // Column mapping for updatedAt
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Many accounts to one user
+    @JoinColumn(name = "user_id", nullable = false) // Foreign key column in account table
+    private UserEntity user;
 
     // Automatically set createdAt before insert
     @PrePersist

@@ -23,11 +23,9 @@ public class AccountController {
 
     private final AccountService service;
 
-    @PostMapping( consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<AccountResponseResource> create(@RequestBody @Valid AccountRequestResource request) {
-        log.debug("Creating new Account...");
-        final AccountResponseResource response = service.createAccount(request);
-        log.info("Successfully created Account...");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+    //TODO
+    // implement create account
+    //retrieve specific account details
+    //update account info
+    //delete account
 }
