@@ -23,6 +23,9 @@ public class AccountResponseResource {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("user_id")
+    private String userId;
+
     @JsonProperty("balance")
     private Double balance;
 

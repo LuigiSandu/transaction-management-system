@@ -1,12 +1,12 @@
 package project.transaction.management.system.service;
 
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.transaction.management.system.api.resource.account.AccountRequestResource;
 import project.transaction.management.system.api.resource.account.AccountResponseResource;
+import project.transaction.management.system.api.resource.account.AccountUpdateRequest;
 import project.transaction.management.system.dao.entity.AccountEntity;
 import project.transaction.management.system.dao.entity.UserEntity;
 import project.transaction.management.system.dao.repository.AccountRepository;
@@ -24,18 +24,22 @@ public class AccountService {
 
     public AccountResponseResource createAccount(AccountRequestResource request) {
 
-        // Fetch UserEntity by userId to set the relationship
+        // Fetch the UserEntity by userId to establish the relationship
         final UserEntity userEntity = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.getUserId()));
 
-        // Map request to AccountEntity and set the UserEntity
+        // Map the request to AccountEntity
         final AccountEntity accountEntity = mapper.toEntity(request);
-        accountEntity.setUser(userEntity); // Set the user in the account entity
 
-        // Save and map to response
+        // Set the UserEntity on the AccountEntity to establish the relationship
+        accountEntity.setUser(userEntity); // This line is essential to link the account to the user
+
+        // Save the account entity to the repository
         final AccountResponseResource response = mapper.fromEntity(repository.save(accountEntity));
 
+        // Log the successful creation of the account
         log.info("Successfully created account with account number: {} for user with id: {}", response.getAccountNumber(), userEntity.getId());
+
         return response;
     }
 
@@ -46,40 +50,23 @@ public class AccountService {
         return mapper.fromEntity(accountEntity);
     }
 
-    public AccountResponseResource updateAccount(String accountNumber, AccountRequestResource request) {
+    public AccountResponseResource updateAccountName(String accountNumber, AccountUpdateRequest request) {
         AccountEntity accountEntity = repository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber));
 
-        // Update account fields with the values from the request
-        if (request.getAccountType() != null) {
-            accountEntity.setAccountType(request.getAccountType());
-        }
-        if (request.getName() != null) {
-            accountEntity.setName(request.getName());
-        }
-        if (request.getBalance() != null) {
-            accountEntity.setBalance(request.getBalance());
-        }
+        accountEntity.setName(request.getName());
 
-        // Save the updated account entity
-        AccountEntity updatedAccount = repository.save(accountEntity);
+        final AccountEntity updatedAccount = repository.save(accountEntity);
 
         return mapper.fromEntity(updatedAccount);
     }
 
-    @Transactional
     public void deleteAccount(Long accountId) {
         log.debug("Deleting account with ID: {}", accountId);
 
-        // Check if the account exists
         AccountEntity accountEntity = repository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with ID: " + accountId));
 
-        // Optionally handle any associated transactions here
-        // For example, if you want to delete transactions related to the account:
-        // transactionRepository.deleteByAccountId(accountId);
-
-        // Delete the account
         repository.delete(accountEntity);
 
         log.info("Account with ID: {} deleted successfully.", accountId);

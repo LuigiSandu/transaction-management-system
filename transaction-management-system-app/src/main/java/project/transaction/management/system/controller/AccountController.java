@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.transaction.management.system.api.resource.account.AccountRequestResource;
 import project.transaction.management.system.api.resource.account.AccountResponseResource;
+import project.transaction.management.system.api.resource.account.AccountUpdateRequest;
 import project.transaction.management.system.service.AccountService;
 
 @RestController
@@ -32,9 +33,7 @@ public class AccountController {
     public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request) {
         log.debug("Attempting to create account with account number: {}", request.getAccountNumber());
 
-        // Call the service to create an account
         final AccountResponseResource response = service.createAccount(request);
-
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -54,10 +53,10 @@ public class AccountController {
     @PatchMapping(value = "/{accountNumber}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountResponseResource> updateAccount(
             @PathVariable String accountNumber,
-            @RequestBody @Valid AccountRequestResource request) {
+            @RequestBody @Valid AccountUpdateRequest request) {
         log.debug("Updating account details for account number: {}", accountNumber);
 
-        AccountResponseResource updatedAccount = service.updateAccount(accountNumber, request);
+        AccountResponseResource updatedAccount = service.updateAccountName(accountNumber, request);
 
         log.info("Account details updated for account number: {}", accountNumber);
         return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
