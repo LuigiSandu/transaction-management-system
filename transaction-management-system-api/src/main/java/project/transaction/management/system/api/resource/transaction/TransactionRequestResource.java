@@ -21,8 +21,9 @@ import java.time.LocalDate;
 @Builder
 public class TransactionRequestResource {
 
-    @NotBlank(message = "Account ID is required")
-    private String accountId;
+    @NotBlank(message = "Account Number is required")
+    @JsonProperty("account_number")
+    private String accountNumber;
 
     @JsonProperty("transaction_type")
     @NotNull(message = "Transaction type is required")

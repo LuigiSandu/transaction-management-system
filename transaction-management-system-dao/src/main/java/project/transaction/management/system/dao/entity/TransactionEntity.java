@@ -2,19 +2,11 @@ package project.transaction.management.system.dao.entity;
 
 
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -49,4 +41,8 @@ public class TransactionEntity {
     @Column(name = "description") // Description can be optional
     private String description;
 
+    @PrePersist
+    protected void onCreate() {
+        this.timestamp = LocalDateTime.now(); // Automatically set the timestamp when the transaction is created
+    }
 }

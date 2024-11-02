@@ -25,7 +25,7 @@ public class TransactionController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionResponseResource> createTransaction(@RequestBody @Valid TransactionRequestResource request) {
-        log.debug("Attempting to create transaction for account ID: {}", request.getAccountId());
+        log.debug("Attempting to create transaction for account number: {}", request.getAccountNumber());
 
         // Call the service to create the transaction
         final TransactionResponseResource response = service.createTransaction(request);

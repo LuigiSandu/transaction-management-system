@@ -27,7 +27,6 @@ public class TransactionResponseResource {
 
     private LocalDate timestamp; // The timestamp of the transaction
 
-
     @JsonProperty("description")
-    private String transactionDescription; // Description of the transaction
+    private String description; // Description of the transaction
 }
