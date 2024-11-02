@@ -2,8 +2,8 @@ package project.transaction.management.system.mapper;
 
 
 import org.mapstruct.Mapper;
-import project.transaction.management.system.api.resource.TransactionRequestResource;
-import project.transaction.management.system.api.resource.TransactionResponseResource;
+import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
+import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
 import project.transaction.management.system.dao.entity.TransactionEntity;
 
 @Mapper(componentModel = "spring")

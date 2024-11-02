@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,13 +43,14 @@ public class AccountEntity {
     @JoinColumn(name = "user_id", nullable = false) // Foreign key column in account table
     private UserEntity user;
 
-    // Automatically set createdAt before insert
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TransactionEntity> transactions = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now(); // Set the current time when the record is created
     }
 
-    // Automatically update updatedAt before update
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now(); // Set the current time when the record is updated

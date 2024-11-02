@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import project.transaction.management.system.api.resource.TransactionRequestResource;
-import project.transaction.management.system.api.resource.TransactionResponseResource;
+import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
+import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
 import project.transaction.management.system.service.TransactionService;
 
 @RestController
@@ -23,12 +23,15 @@ public class TransactionController {
 
     private final TransactionService service;
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<TransactionResponseResource> create(@RequestBody @Valid TransactionRequestResource request) {
-        log.debug("Creating new Account...");
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionResponseResource> createTransaction(@RequestBody @Valid TransactionRequestResource request) {
+        log.debug("Attempting to create transaction for account ID: {}", request.getAccountId());
+
+        // Call the service to create the transaction
         final TransactionResponseResource response = service.createTransaction(request);
-        log.info("Successfully created Account...");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        log.info("Successfully created transaction with ID: {}", response.getId());
+        return new ResponseEntity<>(response, HttpStatus.CREATED); // Return HTTP 201 Created
     }
 
 }
