@@ -1,8 +1,8 @@
-Check a little bit the relationships of entities and how they work
-Be sure that db transactions are properly made
-CHECK TRANSACTION LOGIC IN THE SERVICE LAYER
-fix all the transaction logic and cleanup the project a bit
-IMPLEMENT JWT: study how spring security architecture works and maybe create an extra module for that
+TODO:Check a little bit the relationships of entities and how they work
+TODO:Be sure that db transactions are properly made
+TODO CHECK TRANSACTION LOGIC IN THE SERVICE LAYER kind of done
+TODO:fix all the transaction logic and cleanup the project a bit
+TODO:IMPLEMENT JWT: study how spring security architecture works and maybe create an extra module for that
 
-after all the logic and security is implemented start working on aws infrasatracure
+TODO:after all the logic and security is implemented start working on aws infrasatracure
 1 
