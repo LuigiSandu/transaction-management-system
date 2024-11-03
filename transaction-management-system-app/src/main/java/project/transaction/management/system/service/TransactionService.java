@@ -65,7 +65,7 @@ public class TransactionService {
     }
 
     private void processDeposit(AccountEntity accountEntity, Double amount) {
-        if (!"CHECKING".equals(accountEntity.getAccountType())) {
+        if (!"CHECKING".equalsIgnoreCase(accountEntity.getAccountType())) {
             throw new IllegalArgumentException("Deposits can only be made to checking accounts.");
         }
         accountEntity.setBalance(accountEntity.getBalance() + amount);
@@ -73,7 +73,7 @@ public class TransactionService {
     }
 
     private void processWithdrawal(AccountEntity accountEntity, Double amount) {
-        if (!"CHECKING".equals(accountEntity.getAccountType())) {
+        if (!"CHECKING".equalsIgnoreCase(accountEntity.getAccountType())) {
             throw new IllegalArgumentException("Withdrawals can only be made from checking accounts.");
         }
         if (accountEntity.getBalance() < amount) {
