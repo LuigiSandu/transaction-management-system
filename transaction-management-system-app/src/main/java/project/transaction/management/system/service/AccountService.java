@@ -31,6 +31,11 @@ public class AccountService {
         // Map the request to AccountEntity
         final AccountEntity accountEntity = mapper.toEntity(request);
 
+        // Check for account number uniqueness
+        if (repository.existsByAccountNumber(accountEntity.getAccountNumber())) {
+            throw new IllegalArgumentException("Account number already exists: " + accountEntity.getAccountNumber());
+        }
+
         // Set the UserEntity on the AccountEntity to establish the relationship
         accountEntity.setUser(userEntity); // This line is essential to link the account to the user
 

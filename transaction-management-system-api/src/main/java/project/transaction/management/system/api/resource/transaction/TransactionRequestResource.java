@@ -22,8 +22,8 @@ import java.time.LocalDate;
 public class TransactionRequestResource {
 
     @NotBlank(message = "Account Number is required")
-    @JsonProperty("account_number")
-    private String accountNumber;
+    @JsonProperty("source_account_number")
+    private String sourceAccountNumber;
 
     @JsonProperty("transaction_type")
     @NotNull(message = "Transaction type is required")
@@ -36,4 +36,9 @@ public class TransactionRequestResource {
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
+
+    @NotBlank(message = "Target Account Number is required for transfer transactions")
+    @JsonProperty("target_account_number")
+    private String targetAccountNumber;
+
 }

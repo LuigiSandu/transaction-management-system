@@ -7,11 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
 import project.transaction.management.system.api.resource.user.UserLoginRequestResource;
 import project.transaction.management.system.api.resource.user.UserRequestResource;
 import project.transaction.management.system.api.resource.user.UserResponseResource;
 import project.transaction.management.system.api.resource.user.UserUpdateRequestResource;
+import project.transaction.management.system.service.TransactionService;
 import project.transaction.management.system.service.UserService;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -20,6 +24,7 @@ import project.transaction.management.system.service.UserService;
 public class UserController {
 
     private final UserService service;
+    private final TransactionService transactionService;
 
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserResponseResource> create(@RequestBody @Valid UserRequestResource request) {
@@ -52,6 +57,16 @@ public class UserController {
 
         log.info("Successfully updated User with ID: {}", updatedUser.getId());
         return new ResponseEntity<>(updatedUser, HttpStatus.OK); // Return OK for successful update
+    }
+
+    @GetMapping("/transactions/{userId}")
+    public ResponseEntity<List<TransactionResponseResource>> getAllTransactions(@PathVariable Long userId) {
+        log.info("Received request to get all transactions for user with ID: {}", userId); // Log the incoming request
+
+        List<TransactionResponseResource> transactions = transactionService.getAllTransactionsByUserId(userId);
+
+        log.info("Successfully retrieved {} transactions for user ID: {}", transactions.size(), userId); // Log the number of transactions found
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 }
 

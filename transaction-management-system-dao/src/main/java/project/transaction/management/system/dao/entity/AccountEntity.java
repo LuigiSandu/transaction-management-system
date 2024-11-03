@@ -46,6 +46,10 @@ public class AccountEntity {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TransactionEntity> transactions = new ArrayList<>();
 
+    // Optional: Transactions where this account is the target (for transfers)
+    @OneToMany(mappedBy = "targetAccount", cascade = CascadeType.ALL)
+    private List<TransactionEntity> receivedTransactions;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now(); // Set the current time when the record is created

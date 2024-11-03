@@ -39,6 +39,14 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
+    // Handle NumberFormatException
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<ExceptionResponse> handleNumberFormatException(final NumberFormatException exception) {
+        String errorMessage = "Invalid number format: " + exception.getMessage();
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
     // Generic exception handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGenericException(final Exception exception) {

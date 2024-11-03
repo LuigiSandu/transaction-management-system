@@ -1,2 +1,8 @@
 Check a little bit the relationships of entities and how they work
 Be sure that db transactions are properly made
+CHECK TRANSACTION LOGIC IN THE SERVICE LAYER
+fix all the transaction logic and cleanup the project a bit
+IMPLEMENT JWT: study how spring security architecture works and maybe create an extra module for that
+
+after all the logic and security is implemented start working on aws infrasatracure
+1 

@@ -1,6 +1,5 @@
 package project.transaction.management.system.dao.entity;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +23,11 @@ public class TransactionEntity {
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
-    private AccountEntity account;
+    private AccountEntity account; // Source account for the transaction
+
+    @ManyToOne
+    @JoinColumn(name = "target_account_id", nullable = true) // Nullable for non-transfer transactions
+    private AccountEntity targetAccount; // Target account for transfers
 
     @Column(name = "transaction_type", nullable = false) // Ensuring transactionType cannot be null
     @NotBlank(message = "Transaction type is required")
@@ -32,7 +35,7 @@ public class TransactionEntity {
 
     @Column(name = "amount", nullable = false) // Ensuring amount cannot be null
     @NotNull(message = "Amount is required")
-    private Long amount;
+    private Double amount;
 
     @Column(name = "timestamp", nullable = false) // Ensuring timestamp cannot be null
     @NotNull(message = "Timestamp is required")
