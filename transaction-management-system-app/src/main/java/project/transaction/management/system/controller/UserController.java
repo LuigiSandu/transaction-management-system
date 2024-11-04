@@ -8,10 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
-import project.transaction.management.system.api.resource.user.UserLoginRequestResource;
-import project.transaction.management.system.api.resource.user.UserRequestResource;
-import project.transaction.management.system.api.resource.user.UserResponseResource;
-import project.transaction.management.system.api.resource.user.UserUpdateRequestResource;
+import project.transaction.management.system.api.resource.user.*;
 import project.transaction.management.system.service.TransactionService;
 import project.transaction.management.system.service.UserService;
 
@@ -26,6 +23,7 @@ public class UserController {
     private final UserService service;
     private final TransactionService transactionService;
 
+
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserResponseResource> create(@RequestBody @Valid UserRequestResource request) {
         log.debug("Attempting to create new user with username: {}", request.getUsername());
@@ -37,13 +35,13 @@ public class UserController {
     }
 
     @PostMapping(value = "/login", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserResponseResource> login(@RequestBody @Valid UserLoginRequestResource request) {
+    public ResponseEntity<UserTokenResponse> login(@RequestBody @Valid UserLoginRequestResource request) {
         log.debug("Attempting to log in user with username: {}", request.getUsername());
 
-        final UserResponseResource response = service.loginUser(request);
+        final String response = service.loginUser(request);
 
-        log.info("User {} logged in successfully.", response.getUsername());
-        return new ResponseEntity<>(response, HttpStatus.OK); // Use HttpStatus.OK for successful login
+//        log.info("User {} logged in successfully.");
+        return new ResponseEntity<>(new UserTokenResponse(response), HttpStatus.OK); // Use HttpStatus.OK for successful login
     }
 
     @PatchMapping(value = "/update", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})

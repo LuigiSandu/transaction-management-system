@@ -2,16 +2,22 @@ package project.transaction.management.system.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import project.transaction.management.system.api.resource.user.UserLoginRequestResource;
-import project.transaction.management.system.api.resource.user.UserRequestResource;
-import project.transaction.management.system.api.resource.user.UserResponseResource;
-import project.transaction.management.system.api.resource.user.UserUpdateRequestResource;
+import project.transaction.management.system.api.resource.user.*;
+import project.transaction.management.system.config.JWTGenerator;
+import project.transaction.management.system.dao.entity.Role;
 import project.transaction.management.system.dao.entity.UserEntity;
+import project.transaction.management.system.dao.repository.RoleRepository;
 import project.transaction.management.system.dao.repository.UserRepository;
 import project.transaction.management.system.mapper.UserMapper;
+
+import java.util.Collections;
 
 @Service
 @Slf4j
@@ -19,8 +25,11 @@ import project.transaction.management.system.mapper.UserMapper;
 public class UserService {
 
     private final UserMapper mapper;
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
+    private final JWTGenerator jwtGenerator;
 
     public UserResponseResource createUser(UserRequestResource request) {
         //TODO CHECK USERNAME PASS AND EMAIL? FOR UNIQUNESS
@@ -29,14 +38,17 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         request.setPassword(hashedPassword);
 
+        final Role roles = roleRepository.findByName("USER").get();
+
         final UserEntity userEntity = mapper.toEntity(request);
-        repository.save(userEntity);
+        userEntity.setRoles(Collections.singletonList(roles));
+        userRepository.save(userEntity);
 
         return mapper.fromEntity(userEntity);
     }
 
-    public UserResponseResource loginUser(UserLoginRequestResource request) {
-        final UserEntity userEntity = repository.findByUsername(request.getUsername())
+    public String loginUser(UserLoginRequestResource request) {
+        final UserEntity userEntity = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
         // Verify the password
@@ -45,16 +57,20 @@ public class UserService {
         }
 
         // Optional: Generate an auth token (if implementing JWT) here
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
+                request.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         // String token = generateAuthToken(userEntity); // Implement token generation if needed
+       ;
 
-        return mapper.fromEntity(userEntity); // You can also add the token to this response if needed
+        return jwtGenerator.generateToken(authentication); // You can also add the token to this response if needed
     }
 
     public UserResponseResource updateUser(UserUpdateRequestResource request) {
         Long userId = request.getUserId(); // Assume userId is included in the request
 
         // Retrieve the existing user by ID
-        UserEntity existingUser = repository.findById(userId)
+        UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
         // Update the existing user fields with values from the request
@@ -69,18 +85,18 @@ public class UserService {
         }
 
         // Save the updated user entity
-        UserEntity updatedUser = repository.save(existingUser);
+        UserEntity updatedUser = userRepository.save(existingUser);
 
         return mapper.fromEntity(updatedUser);
     }
 
 
     private void validateUserUniqueness(String username, String email) {
-        if (repository.existsByUsername(username)) {
+        if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        if (repository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already exists");
         }
     }

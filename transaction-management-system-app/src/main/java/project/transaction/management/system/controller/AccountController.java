@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import project.transaction.management.system.api.resource.account.AccountRequestResource;
 import project.transaction.management.system.api.resource.account.AccountResponseResource;
@@ -30,7 +31,7 @@ public class AccountController {
 
     // Create a new account
     @PostMapping(value = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request) {
+    public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request, Authentication authentication) {
         log.debug("Attempting to create account with account number: {}", request.getAccountNumber());
 
         final AccountResponseResource response = service.createAccount(request);
