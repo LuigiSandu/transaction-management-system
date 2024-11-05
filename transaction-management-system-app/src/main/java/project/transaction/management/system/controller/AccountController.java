@@ -28,21 +28,19 @@ public class AccountController {
     public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request, Authentication authentication) {
         log.debug("Attempting to create account with account number: {}", request.getAccountNumber());
 
-        String authenticatedUsername = authentication.getName();
-        AccountResponseResource response = service.createAccount(request, authenticatedUsername);
+        final String authenticatedUsername = authentication.getName();
+        final AccountResponseResource response = service.createAccount(request, authenticatedUsername);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // GET Account by account number endpoint
     @GetMapping(value = "/{accountNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountResponseResource> getAccountByNumber(
             @PathVariable @NotBlank String accountNumber, Authentication authentication) throws AccessDeniedException {
         log.debug("Fetching account details for account number: {}", accountNumber);
 
-        // Pass the authenticated username to the service
-        String authenticatedUsername = authentication.getName();
-        AccountResponseResource accountResponse = service.getAccountByNumber(accountNumber, authenticatedUsername);
+        final String authenticatedUsername = authentication.getName();
+        final AccountResponseResource accountResponse = service.getAccountByNumber(accountNumber, authenticatedUsername);
 
         return new ResponseEntity<>(accountResponse, HttpStatus.OK);
     }

@@ -1,10 +1,14 @@
 package project.transaction.management.system.exception;
 
 
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,6 +51,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
+
     // Generic exception handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGenericException(final Exception exception) {
@@ -54,6 +59,7 @@ public class GlobalExceptionHandler {
         log.error("Unhandled exception: {}", exception.getMessage(), exception);
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
+
 
     // Utility method to build error response
     private ResponseEntity<ExceptionResponse> buildErrorResponse(HttpStatus status, String message) {
