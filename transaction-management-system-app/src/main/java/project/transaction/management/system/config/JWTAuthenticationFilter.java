@@ -35,19 +35,17 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
 
-        if (StringUtils.hasText(token)) {
-            try {
-                if (tokenGenerator.validateToken(token)) {
-                    String username = tokenGenerator.getUsernameFromJWT(token);
-                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                }
-            } catch (AuthenticationCredentialsNotFoundException ex) {
-                handleAuthenticationCredentialsNotFoundException(ex, response);
-                return;
+        try {
+            if (tokenGenerator.validateToken(token)) {
+                String username = tokenGenerator.getUsernameFromJWT(token);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
+        } catch (AuthenticationCredentialsNotFoundException ex) {
+            handleAuthenticationCredentialsNotFoundException(ex, response);
+            return;
         }
 
         filterChain.doFilter(request, response);
@@ -61,7 +59,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String errorId = UUID.randomUUID().toString(); // Generate a unique ID for the error response
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .code("AUTH_CREDENTIALS_NOT_FOUND") // Custom error code for clarity
-                .message("Invalid JWT token" ) // Message from the exception
+                .message("Invalid or missing JWT token") // Message from the exception
                 .id(errorId) // Unique error ID
                 .build();
 
@@ -77,7 +75,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             log.error("Failed to write response: {}", ioException.getMessage(), ioException);
         }
     }
-
 
     private String getJWTFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
