@@ -40,7 +40,7 @@ public class UserController {
 
         final String response = service.loginUser(request);
 
-//        log.info("User {} logged in successfully.");
+        log.info("User {} logged in successfully.");
         return new ResponseEntity<>(new UserTokenResponse(response), HttpStatus.OK); // Use HttpStatus.OK for successful login
     }
 

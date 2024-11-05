@@ -20,6 +20,8 @@ import project.transaction.management.system.exception.ExceptionResponse;
 import java.io.IOException;
 import java.util.UUID;
 
+import static project.transaction.management.system.config.SecurityConstants.LOGIN_PATH;
+
 @Slf4j
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -34,18 +36,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
-
-        try {
-            if (tokenGenerator.validateToken(token)) {
-                String username = tokenGenerator.getUsernameFromJWT(token);
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        if (StringUtils.hasText(token) || (!request.getRequestURI().contains(LOGIN_PATH))) {
+            try {
+                if (tokenGenerator.validateToken(token)) {
+                    String username = tokenGenerator.getUsernameFromJWT(token);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            } catch (AuthenticationCredentialsNotFoundException ex) {
+                handleAuthenticationCredentialsNotFoundException(ex, response);
+                return;
             }
-        } catch (AuthenticationCredentialsNotFoundException ex) {
-            handleAuthenticationCredentialsNotFoundException(ex, response);
-            return;
         }
 
         filterChain.doFilter(request, response);

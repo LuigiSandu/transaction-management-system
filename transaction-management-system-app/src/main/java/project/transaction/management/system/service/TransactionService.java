@@ -27,7 +27,9 @@ public class TransactionService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TransactionResponseResource createTransaction(TransactionRequestResource request) {
+    public TransactionResponseResource createTransaction(TransactionRequestResource request, Long userId) {
+        // Validate that the user has permission to perform the transaction
+        validateUserExists(userId);
         AccountEntity accountEntity = getAccountByNumber(request.getSourceAccountNumber());
 
         // Remove transactionEntity creation for transfers
@@ -100,8 +102,6 @@ public class TransactionService {
 
         // Perform the transfer and create transaction records
         return executeTransfer(sourceAccount, targetAccount, request.getAmount());
-
-
     }
 
     private void validateUserExists(Long userId) {
