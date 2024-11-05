@@ -37,11 +37,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/transaction-management-system/api/v1/users/register").permitAll()
                         .requestMatchers("/transaction-management-system/api/v1/users/login").permitAll()
-                        .requestMatchers("/transaction-management-system/api/v1/users/update").permitAll()
+                        .requestMatchers("/transaction-management-system/api/v1/users/update").authenticated()
                         .requestMatchers("/transaction-management-system/api/v1/accounts/create").authenticated()
-                        .requestMatchers("/transaction-management-system/api/v1/accounts/**").permitAll()
-                        .requestMatchers("/transaction-management-system/api/v1/transactions").permitAll()
-                        .requestMatchers("/transaction-management-system/api/v1/users/transactions/**").permitAll()
+                        .requestMatchers("/transaction-management-system/api/v1/accounts/**").authenticated()
+                        .requestMatchers("/transaction-management-system/api/v1/transactions").authenticated()
+                        .requestMatchers("/transaction-management-system/api/v1/users/transactions/**").authenticated()
                         .anyRequest().authenticated() // All other requests need authentication
                 )
                 .httpBasic(withDefaults()); // Enable HTTP Basic authentication

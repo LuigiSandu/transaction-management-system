@@ -15,23 +15,23 @@ import java.util.Date;
 @Component
 public class JWTGenerator {
 
-    private final SecretKey signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final  SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRY_DATE);
+        Date expireDate = new Date(currentDate.getTime() + 30000);
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(currentDate)
                 .expiration(expireDate)
-                .signWith(signingKey)
+                .signWith(secretKey)
                 .compact();
     }
 
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser() // Use parserBuilder() to create the parser
-                .setSigningKey(signingKey) // Set the signing key for validation
+                .setSigningKey(secretKey) // Set the signing key for validation
                 .build()
                 .parseClaimsJws(token) // Parse the token
                 .getBody();
@@ -41,7 +41,7 @@ public class JWTGenerator {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(signingKey)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;

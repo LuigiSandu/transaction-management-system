@@ -1,6 +1,5 @@
 package project.transaction.management.system.controller;
 
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,8 @@ import project.transaction.management.system.api.resource.account.AccountRespons
 import project.transaction.management.system.api.resource.account.AccountUpdateRequest;
 import project.transaction.management.system.service.AccountService;
 
+import java.nio.file.AccessDeniedException;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -23,54 +24,50 @@ public class AccountController {
 
     private final AccountService service;
 
-    //TODO
-    // implement create account
-    //TODO retrieve specific account details
-    //update account info
-    //delete account
-
-    // Create a new account
     @PostMapping(value = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request, Authentication authentication) {
         log.debug("Attempting to create account with account number: {}", request.getAccountNumber());
 
-        final AccountResponseResource response = service.createAccount(request);
+        String authenticatedUsername = authentication.getName();
+        AccountResponseResource response = service.createAccount(request, authenticatedUsername);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    // GET Account by account number endpoint
     @GetMapping(value = "/{accountNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountResponseResource> getAccountByNumber(
-            @PathVariable @NotBlank String accountNumber) {
+            @PathVariable @NotBlank String accountNumber, Authentication authentication) throws AccessDeniedException {
         log.debug("Fetching account details for account number: {}", accountNumber);
 
-        AccountResponseResource accountResponse = service.getAccountByNumber(accountNumber);
+        // Pass the authenticated username to the service
+        String authenticatedUsername = authentication.getName();
+        AccountResponseResource accountResponse = service.getAccountByNumber(accountNumber, authenticatedUsername);
 
-        log.info("Account details retrieved for account number: {}", accountNumber);
         return new ResponseEntity<>(accountResponse, HttpStatus.OK);
     }
 
-    // Update Account endpoint
     @PatchMapping(value = "/{accountNumber}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountResponseResource> updateAccount(
             @PathVariable String accountNumber,
-            @RequestBody @Valid AccountUpdateRequest request) {
+            @RequestBody @Valid AccountUpdateRequest request, Authentication authentication) throws AccessDeniedException {
         log.debug("Updating account details for account number: {}", accountNumber);
 
-        AccountResponseResource updatedAccount = service.updateAccountName(accountNumber, request);
+        // Pass the authenticated username to the service
+        String authenticatedUsername = authentication.getName();
+        AccountResponseResource updatedAccount = service.updateAccountName(accountNumber, request, authenticatedUsername);
 
-        log.info("Account details updated for account number: {}", accountNumber);
         return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{accountId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long accountId) {
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long accountId, Authentication authentication) throws AccessDeniedException {
         log.debug("Attempting to delete account with ID: {}", accountId);
 
-        service.deleteAccount(accountId);
+        // Pass the authenticated username to the service
+        String authenticatedUsername = authentication.getName();
+        service.deleteAccount(accountId, authenticatedUsername);
 
-        log.info("Successfully deleted account with ID: {}", accountId);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
-
 }

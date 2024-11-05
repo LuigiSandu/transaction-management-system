@@ -13,6 +13,8 @@ import project.transaction.management.system.dao.repository.AccountRepository;
 import project.transaction.management.system.dao.repository.UserRepository;
 import project.transaction.management.system.mapper.AccountMapper;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -22,11 +24,11 @@ public class AccountService {
     private final AccountRepository repository;
     private final UserRepository userRepository;
 
-    public AccountResponseResource createAccount(AccountRequestResource request) {
+    public AccountResponseResource createAccount(AccountRequestResource request, String authenticatedUsername) {
 
-        // Fetch the UserEntity by userId to establish the relationship
-        final UserEntity userEntity = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.getUserId()));
+        // Fetch the UserEntity based on the authenticated username
+        final UserEntity userEntity = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + authenticatedUsername));
 
         // Map the request to AccountEntity
         final AccountEntity accountEntity = mapper.toEntity(request);
@@ -37,43 +39,50 @@ public class AccountService {
         }
 
         // Set the UserEntity on the AccountEntity to establish the relationship
-        accountEntity.setUser(userEntity); // This line is essential to link the account to the user
+        accountEntity.setUser(userEntity); // Link the account to the authenticated user only
 
         // Save the account entity to the repository
         final AccountResponseResource response = mapper.fromEntity(repository.save(accountEntity));
 
         // Log the successful creation of the account
-        log.info("Successfully created account with account number: {} for user with id: {}", response.getAccountNumber(), userEntity.getId());
+        log.info("Successfully created account with account number: {} for user with username: {}", response.getAccountNumber(), authenticatedUsername);
 
         return response;
     }
 
-    public AccountResponseResource getAccountByNumber(String accountNumber) {
-        final AccountEntity accountEntity = repository.findByAccountNumber(accountNumber)
+    public AccountResponseResource getAccountByNumber(String accountNumber, String authenticatedUsername) throws AccessDeniedException {
+        AccountEntity account = repository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber));
 
-        return mapper.fromEntity(accountEntity);
+        // Ensure the account belongs to the authenticated user
+        if (!account.getUser().getUsername().equals(authenticatedUsername)) {
+            throw new AccessDeniedException("User not authorized to access this account");
+        }
+
+        return mapper.fromEntity(account);
     }
 
-    public AccountResponseResource updateAccountName(String accountNumber, AccountUpdateRequest request) {
-        AccountEntity accountEntity = repository.findByAccountNumber(accountNumber)
+    public AccountResponseResource updateAccountName(String accountNumber, AccountUpdateRequest request, String authenticatedUsername) throws AccessDeniedException {
+        AccountEntity account = repository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber));
 
-        accountEntity.setName(request.getName());
+        if (!account.getUser().getUsername().equals(authenticatedUsername)) {
+            throw new AccessDeniedException("User not authorized to update this account");
+        }
 
-        final AccountEntity updatedAccount = repository.save(accountEntity);
-
+        account.setName(request.getName());
+        AccountEntity updatedAccount = repository.save(account);
         return mapper.fromEntity(updatedAccount);
     }
 
-    public void deleteAccount(Long accountId) {
-        log.debug("Deleting account with ID: {}", accountId);
-
-        AccountEntity accountEntity = repository.findById(accountId)
+    public void deleteAccount(Long accountId, String authenticatedUsername) throws AccessDeniedException {
+        AccountEntity account = repository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with ID: " + accountId));
 
-        repository.delete(accountEntity);
+        if (!account.getUser().getUsername().equals(authenticatedUsername)) {
+            throw new AccessDeniedException("User not authorized to delete this account");
+        }
 
-        log.info("Account with ID: {} deleted successfully.", accountId);
+        repository.delete(account);
     }
 }
