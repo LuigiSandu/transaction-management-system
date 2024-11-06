@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static project.transaction.management.system.config.SecurityConstants.LOGIN_PATH;
+import static project.transaction.management.system.config.SecurityConstants.REGISTER_PATH;
 
 @Slf4j
 @Component
@@ -36,7 +37,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
-        if (StringUtils.hasText(token) || (!request.getRequestURI().contains(LOGIN_PATH))) {
+        if (StringUtils.hasText(token) ||( (!request.getRequestURI().contains(LOGIN_PATH)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
             try {
                 if (tokenGenerator.validateToken(token)) {
                     String username = tokenGenerator.getUsernameFromJWT(token);

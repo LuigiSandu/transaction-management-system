@@ -29,12 +29,11 @@ public class TransactionController {
     public ResponseEntity<TransactionResponseResource> createTransaction(@RequestBody @Valid TransactionRequestResource request) {
         log.debug("Attempting to create transaction for account number: {}", request.getSourceAccountNumber());
 
-        // Get the authenticated user's ID
        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal(); // Assuming the principal is the user ID
+        final String authenticatedUsername = authentication.getName();
 
         // Call the service to create the transaction
-        final TransactionResponseResource response = service.createTransaction(request, userId);
+        final TransactionResponseResource response = service.createTransaction(request, authenticatedUsername);
 
         log.info("Successfully created transaction with ID: {}", response.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED); // Return HTTP 201 Created

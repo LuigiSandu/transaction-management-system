@@ -27,9 +27,9 @@ public class TransactionService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TransactionResponseResource createTransaction(TransactionRequestResource request, Long userId) {
+    public TransactionResponseResource createTransaction(TransactionRequestResource request, String authenticatedUsername) {
+        validateUserExistsByUsername(authenticatedUsername);
         // Validate that the user has permission to perform the transaction
-        validateUserExists(userId);
         AccountEntity accountEntity = getAccountByNumber(request.getSourceAccountNumber());
 
         // Remove transactionEntity creation for transfers
@@ -54,7 +54,7 @@ public class TransactionService {
     }
 
     public List<TransactionResponseResource> getAllTransactionsByUserId(Long userId) {
-        validateUserExists(userId);
+        validateUserExistsById(userId);
         List<TransactionEntity> transactions = transactionRepository.findByAccount_User_Id(userId);
         return transactions.stream()
                 .map(mapper::fromEntity)
@@ -104,9 +104,14 @@ public class TransactionService {
         return executeTransfer(sourceAccount, targetAccount, request.getAmount());
     }
 
-    private void validateUserExists(Long userId) {
+    private void validateUserExistsById(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+    }
+    private void validateUserExistsByUsername(String username) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("User not found with username: " + username);
         }
     }
 
