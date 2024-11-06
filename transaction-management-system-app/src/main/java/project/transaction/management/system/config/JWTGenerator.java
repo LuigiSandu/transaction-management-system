@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+import static project.transaction.management.system.config.SecurityConstants.JWT_EXPIRY_DATE;
+
 
 @Component
 public class JWTGenerator {
@@ -21,7 +23,7 @@ public class JWTGenerator {
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + 30000);
+        Date expireDate = new Date(currentDate.getTime() + JWT_EXPIRY_DATE);
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(currentDate)

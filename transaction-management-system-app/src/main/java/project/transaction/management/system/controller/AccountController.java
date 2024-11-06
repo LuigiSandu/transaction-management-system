@@ -51,7 +51,6 @@ public class AccountController {
             @RequestBody @Valid AccountUpdateRequest request, Authentication authentication) throws AccessDeniedException {
         log.debug("Updating account details for account number: {}", accountNumber);
 
-        // Pass the authenticated username to the service
         String authenticatedUsername = authentication.getName();
         AccountResponseResource updatedAccount = service.updateAccountName(accountNumber, request, authenticatedUsername);
 
@@ -62,10 +61,9 @@ public class AccountController {
     public ResponseEntity<Void> deleteAccount(@PathVariable Long accountId, Authentication authentication) throws AccessDeniedException {
         log.debug("Attempting to delete account with ID: {}", accountId);
 
-        // Pass the authenticated username to the service
-        String authenticatedUsername = authentication.getName();
+        final String authenticatedUsername = authentication.getName();
         service.deleteAccount(accountId, authenticatedUsername);
 
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.noContent().build();
     }
 }

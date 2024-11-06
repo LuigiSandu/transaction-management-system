@@ -11,8 +11,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create  # Set to 'update' to keep existing data in the database and only update the schema if needed
     show-sql: true
     properties:
-      hibernate.dialect: org.hibernate.dialect.MySQLDialect  # Use MySQLDialect as MySQL8Dialect is deprecated
-      format_sql: true  # This formats the SQL output nicely in the logs
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+      format_sql: true
+
+  sql:
+    init:
+      mode: always            # Ensures scripts are executed on startup
+      data-locations: classpath:roles.sql  # Specify your SQL file location

@@ -28,31 +28,59 @@ public class TransactionService {
 
     @Transactional
     public TransactionResponseResource createTransaction(TransactionRequestResource request, String authenticatedUsername) {
+        // Validate user
         validateUserExistsByUsername(authenticatedUsername);
-        // Validate that the user has permission to perform the transaction
-        AccountEntity accountEntity = getAccountByNumber(request.getSourceAccountNumber());
 
-        // Remove transactionEntity creation for transfers
+        // Fetch the source account
+        final AccountEntity accountEntity = getAccountByNumber(request.getSourceAccountNumber());
+
+        // Define the transaction entity
+        TransactionEntity transactionEntity = null;
+
+        // Process the transaction based on type
         switch (request.getTransactionType().toUpperCase()) {
             case "DEPOSIT":
                 processDeposit(accountEntity, request.getAmount());
+                transactionEntity = TransactionEntity.builder()
+                        .account(accountEntity)  // Set the source account for the deposit
+                        .transactionType("DEPOSIT")
+                        .amount(request.getAmount())
+                        .description(request.getDescription())
+                        .build();
                 break;
+
             case "WITHDRAWAL":
                 processWithdrawal(accountEntity, request.getAmount());
+                transactionEntity = TransactionEntity.builder()
+                        .account(accountEntity)  // Set the source account for the withdrawal
+                        .transactionType("WITHDRAWAL")
+                        .amount(request.getAmount())
+                        .description(request.getDescription())
+                        .build();
                 break;
+
             case "TRANSFER":
-                return processTransfer(request, accountEntity); // Directly return the transfer response
+                AccountEntity targetAccountEntity = getAccountByNumber(request.getTargetAccountNumber());
+                transactionEntity = TransactionEntity.builder()
+                        .account(accountEntity)   // Set the source account for the transfer
+                        .targetAccount(targetAccountEntity) // Set the target account for the transfer
+                        .transactionType("TRANSFER")
+                        .amount(request.getAmount())
+                        .description(request.getDescription())
+                        .build();
+                return processTransfer(transactionEntity, accountEntity, targetAccountEntity); // Directly return the transfer response
+
             default:
                 throw new IllegalArgumentException("Invalid transaction type: " + request.getTransactionType());
         }
 
-        // Create a transaction entity for deposits and withdrawals
-        TransactionEntity savedTransaction = transactionRepository.save(mapper.toEntity(request)); // Adjust this as necessary
-        accountRepository.save(accountEntity);
+        // Save the transaction and update the account balance for DEPOSIT and WITHDRAWAL
+        transactionEntity = transactionRepository.save(transactionEntity);
+        accountRepository.save(accountEntity); // Ensure the account is saved with updated balance
 
-        return mapper.fromEntity(savedTransaction);
+        // Return the response resource
+        return mapper.fromEntity(transactionEntity);
     }
-
     public List<TransactionResponseResource> getAllTransactionsByUserId(Long userId) {
         validateUserExistsById(userId);
         List<TransactionEntity> transactions = transactionRepository.findByAccount_User_Id(userId);
@@ -60,20 +88,22 @@ public class TransactionService {
                 .map(mapper::fromEntity)
                 .collect(Collectors.toList());
     }
-
-    private AccountEntity getAccountByNumber(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber));
+    private void validateUserExistsById(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
     }
 
+    // Process the deposit (add the amount to the balance)
     private void processDeposit(AccountEntity accountEntity, Double amount) {
         if (!"CHECKING".equalsIgnoreCase(accountEntity.getAccountType())) {
             throw new IllegalArgumentException("Deposits can only be made to checking accounts.");
         }
-        accountEntity.setBalance(accountEntity.getBalance() + amount);
+        accountEntity.setBalance(accountEntity.getBalance() + amount); // Add the deposit amount to the balance
         log.info("Deposited {} to account {}", amount, accountEntity.getAccountNumber());
     }
 
+    // Process the withdrawal (subtract the amount from the balance)
     private void processWithdrawal(AccountEntity accountEntity, Double amount) {
         if (!"CHECKING".equalsIgnoreCase(accountEntity.getAccountType())) {
             throw new IllegalArgumentException("Withdrawals can only be made from checking accounts.");
@@ -81,38 +111,19 @@ public class TransactionService {
         if (accountEntity.getBalance() < amount) {
             throw new IllegalArgumentException("Insufficient funds for withdrawal.");
         }
-        accountEntity.setBalance(accountEntity.getBalance() - amount);
+        accountEntity.setBalance(accountEntity.getBalance() - amount); // Subtract the withdrawal amount from the balance
         log.info("Withdrew {} from account {}", amount, accountEntity.getAccountNumber());
     }
 
-    private TransactionResponseResource processTransfer(TransactionRequestResource request, AccountEntity sourceAccount) {
-        validateTransferAmount(request.getAmount());
-        AccountEntity targetAccount = getAccountByNumber(request.getTargetAccountNumber());
+    private TransactionResponseResource processTransfer(TransactionEntity transactionEntity, AccountEntity sourceAccount, AccountEntity targetAccount) {
+        validateTransferAmount(transactionEntity.getAmount());
 
-        if (sourceAccount.getBalance() < request.getAmount()) {
+        if (sourceAccount.getBalance() < transactionEntity.getAmount()) {
             throw new IllegalArgumentException("Insufficient funds for transfer.");
         }
 
-        if (!sourceAccount.getUser().getId().equals(targetAccount.getUser().getId())) {
-            if (!"CHECKING".equalsIgnoreCase(sourceAccount.getAccountType()) ||
-                    !"CHECKING".equalsIgnoreCase(targetAccount.getAccountType())) {
-                throw new IllegalArgumentException("Cross-user transfers can only be done between checking accounts.");
-            }
-        }
-
-        // Perform the transfer and create transaction records
-        return executeTransfer(sourceAccount, targetAccount, request.getAmount());
-    }
-
-    private void validateUserExistsById(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("User not found with ID: " + userId);
-        }
-    }
-    private void validateUserExistsByUsername(String username) {
-        if (!userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("User not found with username: " + username);
-        }
+        // Perform the transfer and create transaction records for both accounts
+        return executeTransfer(sourceAccount, targetAccount, transactionEntity.getAmount());
     }
 
     private void validateTransferAmount(Double amount) {
@@ -122,7 +133,7 @@ public class TransactionService {
     }
 
     private TransactionResponseResource executeTransfer(AccountEntity sourceAccount, AccountEntity targetAccount, Double amount) {
-        // Update balances
+        // Update the balances
         sourceAccount.setBalance(sourceAccount.getBalance() - amount);
         targetAccount.setBalance(targetAccount.getBalance() + amount);
 
@@ -158,5 +169,16 @@ public class TransactionService {
                 .timestamp(sourceTransaction.getTimestamp())
                 .id(sourceTransaction.getId())
                 .build();
+    }
+
+    private AccountEntity getAccountByNumber(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber));
+    }
+
+    private void validateUserExistsByUsername(String username) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("User not found with username: " + username);
+        }
     }
 }

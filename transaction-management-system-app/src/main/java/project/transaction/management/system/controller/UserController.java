@@ -12,6 +12,7 @@ import project.transaction.management.system.api.resource.user.*;
 import project.transaction.management.system.service.TransactionService;
 import project.transaction.management.system.service.UserService;
 
+import javax.management.relation.RoleNotFoundException;
 import java.util.List;
 
 @RestController
@@ -23,9 +24,8 @@ public class UserController {
     private final UserService service;
     private final TransactionService transactionService;
 
-
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserResponseResource> create(@RequestBody @Valid UserRequestResource request) {
+    public ResponseEntity<UserResponseResource> create(@RequestBody @Valid UserRequestResource request) throws RoleNotFoundException {
         log.debug("Attempting to create new user with username: {}", request.getUsername());
 
         final UserResponseResource response = service.createUser(request);
@@ -40,17 +40,14 @@ public class UserController {
 
         final String response = service.loginUser(request);
 
-        log.info("User {} logged in successfully.");
+        log.info("User {} logged in successfully.", request.getUsername());
         return new ResponseEntity<>(new UserTokenResponse(response), HttpStatus.OK); // Use HttpStatus.OK for successful login
     }
 
     @PatchMapping(value = "/update", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserResponseResource> update(
-            @RequestBody @Valid UserUpdateRequestResource request
-    ) {
+    public ResponseEntity<UserResponseResource> update(@RequestBody @Valid UserUpdateRequestResource request) {
         log.debug("Attempting to update user with ID: {}", request.getUserId());
 
-        // Call the service method to update the user details
         final UserResponseResource updatedUser = service.updateUser(request);
 
         log.info("Successfully updated User with ID: {}", updatedUser.getId());

@@ -3,6 +3,7 @@ package project.transaction.management.system.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import project.transaction.management.system.api.resource.account.AccountRequestResource;
 import project.transaction.management.system.api.resource.account.AccountResponseResource;
@@ -25,7 +26,6 @@ public class AccountService {
     private final UserRepository userRepository;
 
     public AccountResponseResource createAccount(AccountRequestResource request, String authenticatedUsername) {
-
         // Fetch the UserEntity based on the authenticated username
         final UserEntity userEntity = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + authenticatedUsername));

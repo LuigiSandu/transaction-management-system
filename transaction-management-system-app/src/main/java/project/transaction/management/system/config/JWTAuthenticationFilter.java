@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -37,7 +38,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
-        if (StringUtils.hasText(token) ||( (!request.getRequestURI().contains(LOGIN_PATH)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
+        if (StringUtils.hasText(token) || ((!request.getRequestURI().contains(LOGIN_PATH)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
             try {
                 if (tokenGenerator.validateToken(token)) {
                     String username = tokenGenerator.getUsernameFromJWT(token);
@@ -46,8 +47,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
-            } catch (AuthenticationCredentialsNotFoundException ex) {
-                handleAuthenticationCredentialsNotFoundException(ex, response);
+            } catch (AuthenticationCredentialsNotFoundException |UsernameNotFoundException ex) {
+                handleJwtException(ex, response);
                 return;
             }
         }
@@ -55,7 +56,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex, HttpServletResponse response) {
+    private void handleJwtException(Exception ex, HttpServletResponse response) {
         // Log the error
         log.info("Authentication error: {}", ex.getMessage(), ex);
 

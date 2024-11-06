@@ -1,6 +1,0 @@
-// TODO: Add proper sql scripts for entities
-// TODO: Proper logging(Both Business and DEBUG LEVEL)
-// TODO: Proper config files
-// is it better to use sql scripts or hibernate to create tables?
-//get proper business logic
-//implement logic for transfer to only work in case of checkings
