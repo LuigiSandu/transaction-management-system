@@ -4,9 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -20,19 +18,28 @@ public class JWTGenerator {
 
     private static final  SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    public String generateToken(Authentication authentication) {
-        String username = authentication.getName();
+    public String generateToken(Long id, int tokenVersion) {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + JWT_EXPIRY_DATE);
+
         return Jwts.builder()
-                .subject(username)
+                .subject(id.toString())
+                .claim("tokenVersion",tokenVersion)
                 .issuedAt(currentDate)
                 .expiration(expireDate)
                 .signWith(secretKey)
                 .compact();
     }
+    public int getTokenVersionFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("tokenVersion", Integer.class); // Extract tokenVersion from claims
+    }
 
-    public String getUsernameFromJWT(String token) {
+    public String getSubjectFromJwt(String token) {
         Claims claims = Jwts.parser() // Use parserBuilder() to create the parser
                 .setSigningKey(secretKey) // Set the signing key for validation
                 .build()

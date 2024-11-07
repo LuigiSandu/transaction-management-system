@@ -64,7 +64,7 @@ public class UserService {
         // String token = generateAuthToken(userEntity); // Implement token generation if needed
         ;
 
-        return jwtGenerator.generateToken(authentication); // You can also add the token to this response if needed
+        return jwtGenerator.generateToken(userEntity.getId(), userEntity.getTokenVersion()); // You can also add the token to this response if needed
     }
 
     public UserResponseResource updateUser(UserUpdateRequestResource request) {
@@ -86,8 +86,9 @@ public class UserService {
         }
 
         // Save the updated user entity
+        existingUser.setTokenVersion(existingUser.getTokenVersion() + 1);
         UserEntity updatedUser = userRepository.save(existingUser);
-
+        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
         return mapper.fromEntity(updatedUser);
     }
 

@@ -12,10 +12,13 @@ import project.transaction.management.system.dao.entity.Role;
 import project.transaction.management.system.dao.entity.UserEntity;
 import project.transaction.management.system.dao.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.Duration;
+
+import static project.transaction.management.system.config.SecurityConstants.JWT_EXPIRY_DATE;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        return new User(user.getUsername(), user.getPassword(), mapRolesToGrantedAuthorities(user.getRoles()));
+    }
+
+    public UserDetails loadUserById(String userId) throws UsernameNotFoundException {
+        UserEntity user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return new User(user.getUsername(), user.getPassword(), mapRolesToGrantedAuthorities(user.getRoles()));
     }

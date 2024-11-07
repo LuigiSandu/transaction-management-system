@@ -34,6 +34,9 @@ public class UserEntity {
     @Column(name = "created_at", updatable = false) // Column mapping for createdAt
     private LocalDateTime createdAt;
 
+    @Column(name = "token_version") // Column mapping for createdAt
+    private int tokenVersion = 1;
+
     @Column(name = "updated_at") // Column mapping for updatedAt
     private LocalDateTime updatedAt;
 

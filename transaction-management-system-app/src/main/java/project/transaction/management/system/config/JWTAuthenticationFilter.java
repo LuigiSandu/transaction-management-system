@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import project.transaction.management.system.dao.entity.UserEntity;
+import project.transaction.management.system.dao.repository.UserRepository;
 import project.transaction.management.system.exception.ExceptionResponse;
 
 import java.io.IOException;
@@ -34,6 +36,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -41,13 +45,25 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) || ((!request.getRequestURI().contains(LOGIN_PATH)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
             try {
                 if (tokenGenerator.validateToken(token)) {
-                    String username = tokenGenerator.getUsernameFromJWT(token);
-                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                    String id = tokenGenerator.getSubjectFromJwt(token); // User ID
+                    int tokenVersion = tokenGenerator.getTokenVersionFromJwt(token); // Retrieve token version from JWT
+
+                    UserDetails userDetails = customUserDetailsService.loadUserById(id);
+
+                    // Fetch user's current token version from the database
+                    UserEntity userEntity = userRepository.findById(Long.valueOf(id))
+                            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+                    // Compare token's version with the user's current version
+                    if (userEntity.getTokenVersion() != tokenVersion) {
+                        throw new AuthenticationCredentialsNotFoundException("Token version mismatch. Please re-authenticate.");
+                    }
+
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
-            } catch (AuthenticationCredentialsNotFoundException |UsernameNotFoundException ex) {
+            } catch (AuthenticationCredentialsNotFoundException | UsernameNotFoundException ex) {
                 handleJwtException(ex, response);
                 return;
             }
