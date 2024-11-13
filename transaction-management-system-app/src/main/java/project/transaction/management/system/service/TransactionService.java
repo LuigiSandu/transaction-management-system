@@ -86,8 +86,10 @@ public class TransactionService {
 
     public List<TransactionResponseResource> getAllTransactionsByUserId(String authorizationHeader) {
         String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
+        log.debug("Received request to get all transactions for user with ID: {}", userId); // Log the incoming request
         validateUserExistsById(Long.parseLong(userId));
         List<TransactionEntity> transactions = transactionRepository.findByAccount_User_Id(Long.parseLong(userId));
+        log.info("Successfully retrieved {} transactions for user ID: {}", transactions.size(), userId);
         return transactions.stream()
                 .map(mapper::fromEntity)
                 .collect(Collectors.toList());

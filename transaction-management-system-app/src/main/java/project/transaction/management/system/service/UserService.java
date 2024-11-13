@@ -38,6 +38,11 @@ public class UserService {
     @Transactional
     public UserResponseResource createUser(UserRequestResource request) throws RoleNotFoundException {
         validateUserAndEmailUniqueness(request.getUsername(), request.getEmail());
+
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Password cannot be null or blank");
+        }
+
         final String hashedPassword = passwordEncoder.encode(request.getPassword());
         request.setPassword(hashedPassword);
 
@@ -57,23 +62,23 @@ public class UserService {
 
         validatePassword(request.getPassword(), userEntity.getPassword());
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
-                request.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return jwtGenerator.generateToken(userEntity.getId(), userEntity.getTokenVersion()); // You can also add the token to this response if needed
+        return jwtGenerator.generateToken(userEntity.getId(), userEntity.getTokenVersion());
     }
 
     @Transactional
     public UserResponseResource updateUser(UserUpdateRequestResource request, String authorizationHeader) {
         String userId = extractUserIdFromToken(authorizationHeader);
         log.debug("Attempting to update user with ID: {}", userId);
+
         UserEntity existingUser = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
         updateUserFields(existingUser, request);
 
-        // Save the updated user entity
         existingUser.setTokenVersion(existingUser.getTokenVersion() + 1);
         final UserEntity updatedUser = userRepository.save(existingUser);
 
@@ -93,9 +98,11 @@ public class UserService {
     }
 
     private String extractUserIdFromToken(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid authorization header format");
+        }
         return jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
     }
-
 
     private void validateUserAndEmailUniqueness(String username, String email) {
         if (userRepository.existsByUsername(username)) {

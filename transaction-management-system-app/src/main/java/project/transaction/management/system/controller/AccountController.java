@@ -2,6 +2,7 @@ package project.transaction.management.system.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,9 @@ public class AccountController {
 
     @PostMapping(value = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request, Authentication authentication) {
-        log.debug("Attempting to create account with account number: {}", request.getAccountNumber());
+        log.debug("Attempting to create account with account number: {} for username: {}", request.getAccountNumber(), authentication.getName());
 
-        final String authenticatedUsername = authentication.getName();
-        final AccountResponseResource response = service.createAccount(request, authenticatedUsername);
+        final AccountResponseResource response = service.createAccount(request, );
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -39,21 +39,20 @@ public class AccountController {
             @PathVariable @NotBlank String accountNumber, Authentication authentication) throws AccessDeniedException {
         log.debug("Fetching account details for account number: {}", accountNumber);
 
-        final String authenticatedUsername = authentication.getName();
-        final AccountResponseResource accountResponse = service.getAccountByNumber(accountNumber, authenticatedUsername);
+        final AccountResponseResource accountResponse = service.getAccountByNumber(accountNumber, authentication.getName());
 
         return new ResponseEntity<>(accountResponse, HttpStatus.OK);
     }
 
     @PatchMapping(value = "/{accountNumber}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountResponseResource> updateAccount(
-            @PathVariable String accountNumber,
+            @PathVariable @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Account number must be alphanumeric") String accountNumber,
             @RequestBody @Valid AccountUpdateRequest request, Authentication authentication) throws AccessDeniedException {
         log.debug("Updating account details for account number: {}", accountNumber);
 
-        String authenticatedUsername = authentication.getName();
-        AccountResponseResource updatedAccount = service.updateAccountName(accountNumber, request, authenticatedUsername);
+        final AccountResponseResource updatedAccount = service.updateAccountName(accountNumber, request, authentication.getName());
 
+        log.info("Successfully updated account details for account number: {}", accountNumber);
         return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
     }
 
@@ -64,6 +63,7 @@ public class AccountController {
         final String authenticatedUsername = authentication.getName();
         service.deleteAccount(accountId, authenticatedUsername);
 
+        log.info("Account with ID deleted successfully: {}", accountId);
         return ResponseEntity.noContent().build();
     }
 }

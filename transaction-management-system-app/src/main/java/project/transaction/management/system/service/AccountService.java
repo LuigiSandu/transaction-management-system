@@ -1,6 +1,7 @@
 package project.transaction.management.system.service;
 
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
@@ -25,8 +26,8 @@ public class AccountService {
     private final AccountRepository repository;
     private final UserRepository userRepository;
 
+    @Transactional
     public AccountResponseResource createAccount(AccountRequestResource request, String authenticatedUsername) {
-        // Fetch the UserEntity based on the authenticated username
         final UserEntity userEntity = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + authenticatedUsername));
 

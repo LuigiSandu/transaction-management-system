@@ -55,12 +55,8 @@ public class UserController {
     }
 
     @GetMapping("/transactions/{userId}")
-    public ResponseEntity<List<TransactionResponseResource>> getAllTransactions(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long userId) {
-        log.info("Received request to get all transactions for user with ID: {}", userId); // Log the incoming request
-
-        List<TransactionResponseResource> transactions = transactionService.getAllTransactionsByUserId(authorizationHeader);
-
-        log.info("Successfully retrieved {} transactions for user ID: {}", transactions.size(), userId); // Log the number of transactions found
+    public ResponseEntity<List<TransactionResponseResource>> getAllTransactions(@RequestHeader("Authorization") String authorizationHeader) {
+        final List<TransactionResponseResource> transactions = transactionService.getAllTransactionsByUserId(authorizationHeader);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 }
