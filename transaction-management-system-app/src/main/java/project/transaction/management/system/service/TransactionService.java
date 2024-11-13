@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
 import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
+import project.transaction.management.system.config.JWTGenerator;
 import project.transaction.management.system.dao.entity.AccountEntity;
 import project.transaction.management.system.dao.entity.TransactionEntity;
 import project.transaction.management.system.dao.repository.AccountRepository;
@@ -25,6 +26,7 @@ public class TransactionService {
     private final TransactionReposittory transactionRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final JWTGenerator jwtGenerator;
 
     @Transactional
     public TransactionResponseResource createTransaction(TransactionRequestResource request, String authenticatedUsername) {
@@ -81,13 +83,16 @@ public class TransactionService {
         // Return the response resource
         return mapper.fromEntity(transactionEntity);
     }
-    public List<TransactionResponseResource> getAllTransactionsByUserId(Long userId) {
-        validateUserExistsById(userId);
-        List<TransactionEntity> transactions = transactionRepository.findByAccount_User_Id(userId);
+
+    public List<TransactionResponseResource> getAllTransactionsByUserId(String authorizationHeader) {
+        String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
+        validateUserExistsById(Long.parseLong(userId));
+        List<TransactionEntity> transactions = transactionRepository.findByAccount_User_Id(Long.parseLong(userId));
         return transactions.stream()
                 .map(mapper::fromEntity)
                 .collect(Collectors.toList());
     }
+
     private void validateUserExistsById(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("User not found with ID: " + userId);

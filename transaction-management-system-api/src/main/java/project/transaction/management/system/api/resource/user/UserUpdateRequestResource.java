@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserUpdateRequestResource {
 
-    @JsonProperty("user_id")
-    @NotNull
-    private Long userId; // Adding userId field
 
     @JsonProperty("username")
     @Size(min = 6, max = 20, message = "Username should have between 6 and 20 characters.")

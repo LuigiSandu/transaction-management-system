@@ -45,20 +45,20 @@ public class UserController {
     }
 
     @PatchMapping(value = "/update", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserResponseResource> update(@RequestBody @Valid UserUpdateRequestResource request) {
-        log.debug("Attempting to update user with ID: {}", request.getUserId());
+    public ResponseEntity<UserResponseResource> update(@RequestHeader("Authorization") String authorizationHeader,
+                                                       @RequestBody @Valid UserUpdateRequestResource request) {
 
-        final UserResponseResource updatedUser = service.updateUser(request);
+        final UserResponseResource updatedUser = service.updateUser(request, authorizationHeader);
 
         log.info("Successfully updated User with ID: {}", updatedUser.getId());
         return new ResponseEntity<>(updatedUser, HttpStatus.OK); // Return OK for successful update
     }
 
     @GetMapping("/transactions/{userId}")
-    public ResponseEntity<List<TransactionResponseResource>> getAllTransactions(@PathVariable Long userId) {
+    public ResponseEntity<List<TransactionResponseResource>> getAllTransactions(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long userId) {
         log.info("Received request to get all transactions for user with ID: {}", userId); // Log the incoming request
 
-        List<TransactionResponseResource> transactions = transactionService.getAllTransactionsByUserId(userId);
+        List<TransactionResponseResource> transactions = transactionService.getAllTransactionsByUserId(authorizationHeader);
 
         log.info("Successfully retrieved {} transactions for user ID: {}", transactions.size(), userId); // Log the number of transactions found
         return new ResponseEntity<>(transactions, HttpStatus.OK);

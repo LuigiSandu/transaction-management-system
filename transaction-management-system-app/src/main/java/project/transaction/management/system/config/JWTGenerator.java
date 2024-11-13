@@ -59,4 +59,12 @@ public class JWTGenerator {
             throw new AuthenticationCredentialsNotFoundException("JWT token not valid.");
         }
     }
+    public String getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject(); // This returns the user ID if it is set as the subject
+    }
 }

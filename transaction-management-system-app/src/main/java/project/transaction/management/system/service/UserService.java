@@ -1,5 +1,6 @@
 package project.transaction.management.system.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +35,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final JWTGenerator jwtGenerator;
 
+    @Transactional
     public UserResponseResource createUser(UserRequestResource request) throws RoleNotFoundException {
         validateUserAndEmailUniqueness(request.getUsername(), request.getEmail());
         final String hashedPassword = passwordEncoder.encode(request.getPassword());
@@ -53,43 +55,45 @@ public class UserService {
         final UserEntity userEntity = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), userEntity.getPassword())) {
-            throw new IllegalArgumentException("Invalid username or password");
-        }
+        validatePassword(request.getPassword(), userEntity.getPassword());
 
-        // Optional: Generate an auth token (if implementing JWT) here
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
                 request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // String token = generateAuthToken(userEntity); // Implement token generation if needed
-        ;
 
         return jwtGenerator.generateToken(userEntity.getId(), userEntity.getTokenVersion()); // You can also add the token to this response if needed
     }
 
-    public UserResponseResource updateUser(UserUpdateRequestResource request) {
-        Long userId = request.getUserId(); // Assume userId is included in the request
-
-        // Retrieve the existing user by ID
-        UserEntity existingUser = userRepository.findById(userId)
+    @Transactional
+    public UserResponseResource updateUser(UserUpdateRequestResource request, String authorizationHeader) {
+        String userId = extractUserIdFromToken(authorizationHeader);
+        log.debug("Attempting to update user with ID: {}", userId);
+        UserEntity existingUser = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-        // Update the existing user fields with values from the request
-        if (request.getUsername() != null) {
-            existingUser.setUsername(request.getUsername()); // Set new username
-        }
-        if (request.getEmail() != null) {
-            existingUser.setEmail(request.getEmail()); // Set new email
-        }
-        if (request.getPassword() != null) {
-            existingUser.setPassword(passwordEncoder.encode(request.getPassword())); // Encode new password
-        }
+        updateUserFields(existingUser, request);
 
         // Save the updated user entity
         existingUser.setTokenVersion(existingUser.getTokenVersion() + 1);
-        UserEntity updatedUser = userRepository.save(existingUser);
-        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+        final UserEntity updatedUser = userRepository.save(existingUser);
+
         return mapper.fromEntity(updatedUser);
+    }
+
+    private void validatePassword(String requestPassword, String userPassword) {
+        if (!passwordEncoder.matches(requestPassword, userPassword)) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+    }
+
+    private void updateUserFields(UserEntity user, UserUpdateRequestResource request) {
+        if (request.getUsername() != null) user.setUsername(request.getUsername());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getPassword() != null) user.setPassword(passwordEncoder.encode(request.getPassword()));
+    }
+
+    private String extractUserIdFromToken(String authorizationHeader) {
+        return jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
     }
 
 
