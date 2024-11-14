@@ -8,11 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
 import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
 import project.transaction.management.system.service.TransactionService;
@@ -26,14 +22,10 @@ public class TransactionController {
     private final TransactionService service;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponseResource> createTransaction(@RequestBody @Valid TransactionRequestResource request) {
+    public ResponseEntity<TransactionResponseResource> createTransaction(@RequestHeader("Authorization") String authorizationHeader, @RequestBody @Valid TransactionRequestResource request, Authentication authentication) {
         log.debug("Attempting to create transaction for account number: {}", request.getSourceAccountNumber());
 
-       final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final String authenticatedUsername = authentication.getName();
-
-        // Call the service to create the transaction
-        final TransactionResponseResource response = service.createTransaction(request, authenticatedUsername);
+        final TransactionResponseResource response = service.createTransaction(request, authorizationHeader);
 
         log.info("Successfully created transaction with ID: {}", response.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED); // Return HTTP 201 Created

@@ -50,6 +50,13 @@ public class GlobalExceptionHandler {
         String errorMessage = "Invalid number format: " + exception.getMessage();
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
+    // Handle AccountNotFoundException
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleAccountNotFoundException(final AccountNotFoundException exception) {
+        String errorMessage = exception.getMessage() != null ? exception.getMessage() : "Account not found";
+        return buildErrorResponse(HttpStatus.NOT_FOUND, errorMessage);
+    }
 
 
     // Generic exception handler

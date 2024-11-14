@@ -37,10 +37,6 @@ public class AccountRequestResource {
     @DecimalMin(value = "0.0", inclusive = true, message = "Balance must be a positive number")
     private Double balance;
 
-    @JsonProperty("user_id")
-    @NotNull(message = "User ID is required")
-    @Min(value = 1, message = "User ID must be a positive number")
-    private Long userId;
 
 
 }

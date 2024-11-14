@@ -3,6 +3,7 @@ package project.transaction.management.system.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
 import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
@@ -15,6 +16,7 @@ import project.transaction.management.system.dao.repository.UserRepository;
 import project.transaction.management.system.mapper.TransactionMapper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,17 +31,11 @@ public class TransactionService {
     private final JWTGenerator jwtGenerator;
 
     @Transactional
-    public TransactionResponseResource createTransaction(TransactionRequestResource request, String authenticatedUsername) {
-        // Validate user
-        validateUserExistsByUsername(authenticatedUsername);
+    public TransactionResponseResource createTransaction(TransactionRequestResource request, String authorizationHeader) {
+        final AccountEntity accountEntity = validateAccountExistsAndRetrieveIt(request, authorizationHeader);
 
-        // Fetch the source account
-        final AccountEntity accountEntity = getAccountByNumber(request.getSourceAccountNumber());
-
-        // Define the transaction entity
         TransactionEntity transactionEntity = null;
 
-        // Process the transaction based on type
         switch (request.getTransactionType().toUpperCase()) {
             case "DEPOSIT":
                 processDeposit(accountEntity, request.getAmount());
@@ -95,6 +91,14 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
+    private AccountEntity validateAccountExistsAndRetrieveIt(TransactionRequestResource request, String authorizationHeader) {
+        String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
+        if(Objects.equals(request.getSourceAccountNumber(), request.getTargetAccountNumber())){
+            throw new IllegalArgumentException("Target account can't be the same as source account.");
+        }
+        return getAccountByNumberAndUserId(request.getSourceAccountNumber(), Long.parseLong(userId));
+    }
+
     private void validateUserExistsById(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("User not found with ID: " + userId);
@@ -123,6 +127,7 @@ public class TransactionService {
     }
 
     private TransactionResponseResource processTransfer(TransactionEntity transactionEntity, AccountEntity sourceAccount, AccountEntity targetAccount) {
+        validateTransferConditions(sourceAccount,targetAccount);
         validateTransferAmount(transactionEntity.getAmount());
 
         if (sourceAccount.getBalance() < transactionEntity.getAmount()) {
@@ -131,6 +136,18 @@ public class TransactionService {
 
         // Perform the transfer and create transaction records for both accounts
         return executeTransfer(sourceAccount, targetAccount, transactionEntity.getAmount());
+    }
+    private void validateTransferConditions(AccountEntity sourceAccount, AccountEntity targetAccount) {
+        // Case 1: If the source account belongs to the same user as the target account
+        if (sourceAccount.getUser().equals(targetAccount.getUser())) {
+            log.debug("Transferring between accounts of the same user: {} -> {}", sourceAccount.getAccountNumber(), targetAccount.getAccountNumber());
+        }
+        // Case 2: If the source account is a checking account and the target account is also a checking account of a different user
+        else if ("CHECKING".equalsIgnoreCase(sourceAccount.getAccountType()) && "CHECKING".equalsIgnoreCase(targetAccount.getAccountType())) {
+            log.debug("Transferring from one user's checking account to another user's checking account.");
+        } else {
+            throw new IllegalArgumentException("Transfers can only happen between checking accounts.");
+        }
     }
 
     private void validateTransferAmount(Double amount) {
@@ -181,6 +198,11 @@ public class TransactionService {
     private AccountEntity getAccountByNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber));
+    }
+
+    private AccountEntity getAccountByNumberAndUserId(String accountNumber, Long userId) {
+        return accountRepository.findByAccountNumberAndUserId(accountNumber, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber + " for userId: " + userId));
     }
 
     private void validateUserExistsByUsername(String username) {

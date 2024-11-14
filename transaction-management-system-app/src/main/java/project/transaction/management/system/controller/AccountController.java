@@ -29,7 +29,7 @@ public class AccountController {
     public ResponseEntity<AccountResponseResource> createAccount(@RequestBody @Valid AccountRequestResource request, Authentication authentication) {
         log.debug("Attempting to create account with account number: {} for username: {}", request.getAccountNumber(), authentication.getName());
 
-        final AccountResponseResource response = service.createAccount(request, );
+        final AccountResponseResource response = service.createAccount(request, authentication.getName());
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -60,8 +60,7 @@ public class AccountController {
     public ResponseEntity<Void> deleteAccount(@PathVariable Long accountId, Authentication authentication) throws AccessDeniedException {
         log.debug("Attempting to delete account with ID: {}", accountId);
 
-        final String authenticatedUsername = authentication.getName();
-        service.deleteAccount(accountId, authenticatedUsername);
+        service.deleteAccount(accountId, authentication.getName());
 
         log.info("Account with ID deleted successfully: {}", accountId);
         return ResponseEntity.noContent().build();

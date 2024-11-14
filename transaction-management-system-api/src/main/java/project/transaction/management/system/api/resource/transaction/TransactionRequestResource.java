@@ -2,10 +2,7 @@ package project.transaction.management.system.api.resource.transaction;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +20,8 @@ public class TransactionRequestResource {
 
     @NotBlank(message = "Account Number is required")
     @JsonProperty("source_account_number")
+    @Size(min = 8, max = 20, message = "Account number must be between 8 and 20 characters")
+    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Account number must be alphanumeric")
     private String sourceAccountNumber;
 
     @JsonProperty("transaction_type")
@@ -37,7 +36,6 @@ public class TransactionRequestResource {
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
 
-    @NotBlank(message = "Target Account Number is required for transfer transactions")
     @JsonProperty("target_account_number")
     private String targetAccountNumber;
 

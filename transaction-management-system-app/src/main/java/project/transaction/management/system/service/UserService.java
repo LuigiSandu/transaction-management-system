@@ -80,7 +80,7 @@ public class UserService {
         updateUserFields(existingUser, request);
 
         existingUser.setTokenVersion(existingUser.getTokenVersion() + 1);
-        final UserEntity updatedUser = userRepository.save(existingUser);
+        final UserEntity updatedUser = userRepository.saveAndFlush(existingUser);
 
         return mapper.fromEntity(updatedUser);
     }
