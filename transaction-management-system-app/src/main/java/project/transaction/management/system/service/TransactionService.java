@@ -92,11 +92,15 @@ public class TransactionService {
 
     private AccountEntity validateAccountExistsAndRetrieveIt(TransactionRequestResource request, String authorizationHeader) {
         String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
-        if (Objects.equals(request.getSourceAccountNumber(), request.getTargetAccountNumber())) {
+
+        if (request.getTargetAccountNumber() != null &&
+                Objects.equals(request.getSourceAccountNumber(), request.getTargetAccountNumber())) {
             throw new IllegalArgumentException("Target account can't be the same as source account.");
         }
+
         return getAccountByNumberAndUserId(request.getSourceAccountNumber(), Long.parseLong(userId));
     }
+
 
     private void validateUserExistsById(Long userId) {
         if (!userRepository.existsById(userId)) {
