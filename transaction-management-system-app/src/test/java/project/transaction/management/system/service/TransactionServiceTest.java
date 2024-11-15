@@ -129,7 +129,7 @@ class TransactionServiceTest {
         when(accountRepository.findByAccountNumberAndUserId("12345678", 1L)).thenReturn(Optional.of(accountEntity));
         when(accountRepository.findByAccountNumber("87654321")).thenReturn(Optional.of(targetAccount));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             transactionService.createTransaction(request, AUTHORIZATION_HEADER);
         });
         assertEquals("Insufficient funds for transfer.", exception.getMessage());
@@ -167,12 +167,10 @@ class TransactionServiceTest {
                 .accountType("SAVINGS")
                 .build();
 
-        // Mocks
         when(jwtGenerator.getUserIdFromToken(AUTHORIZATION_HEADER.substring(7))).thenReturn("1");
         when(accountRepository.findByAccountNumberAndUserId("12345678", 1L)).thenReturn(Optional.of(accountEntity));
 
-        // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             transactionService.createTransaction(request, AUTHORIZATION_HEADER);
         });
         assertEquals("Deposits can only be made to checking accounts.", exception.getMessage());
