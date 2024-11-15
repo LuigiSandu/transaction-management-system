@@ -29,11 +29,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
+                .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(authEntryPoint)) // Custom authentication entry point
+                        exceptionHandling.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Set session management to stateless
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/transaction-management-system/api/v1/users/register").permitAll()
                         .requestMatchers("/transaction-management-system/api/v1/users/login").permitAll()
@@ -42,9 +42,9 @@ public class SecurityConfig {
                         .requestMatchers("/transaction-management-system/api/v1/accounts/**").authenticated()
                         .requestMatchers("/transaction-management-system/api/v1/transactions").authenticated()
                         .requestMatchers("/transaction-management-system/api/v1/users/transactions/**").authenticated()
-                        .anyRequest().authenticated() // All other requests need authentication
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults()); // Enable HTTP Basic authentication
+                .httpBasic(withDefaults());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

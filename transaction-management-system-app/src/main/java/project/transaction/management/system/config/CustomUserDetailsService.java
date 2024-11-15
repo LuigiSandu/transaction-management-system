@@ -12,13 +12,9 @@ import project.transaction.management.system.dao.entity.Role;
 import project.transaction.management.system.dao.entity.UserEntity;
 import project.transaction.management.system.dao.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.Duration;
-
-import static project.transaction.management.system.config.SecurityConstants.JWT_EXPIRY_DATE;
 
 @Service
 @RequiredArgsConstructor

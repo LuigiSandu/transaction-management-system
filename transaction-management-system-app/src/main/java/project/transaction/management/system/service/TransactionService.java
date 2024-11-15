@@ -3,7 +3,6 @@ package project.transaction.management.system.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
 import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
@@ -93,7 +92,7 @@ public class TransactionService {
 
     private AccountEntity validateAccountExistsAndRetrieveIt(TransactionRequestResource request, String authorizationHeader) {
         String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
-        if(Objects.equals(request.getSourceAccountNumber(), request.getTargetAccountNumber())){
+        if (Objects.equals(request.getSourceAccountNumber(), request.getTargetAccountNumber())) {
             throw new IllegalArgumentException("Target account can't be the same as source account.");
         }
         return getAccountByNumberAndUserId(request.getSourceAccountNumber(), Long.parseLong(userId));
@@ -127,7 +126,7 @@ public class TransactionService {
     }
 
     private TransactionResponseResource processTransfer(TransactionEntity transactionEntity, AccountEntity sourceAccount, AccountEntity targetAccount) {
-        validateTransferConditions(sourceAccount,targetAccount);
+        validateTransferConditions(sourceAccount, targetAccount);
         validateTransferAmount(transactionEntity.getAmount());
 
         if (sourceAccount.getBalance() < transactionEntity.getAmount()) {
@@ -137,6 +136,7 @@ public class TransactionService {
         // Perform the transfer and create transaction records for both accounts
         return executeTransfer(sourceAccount, targetAccount, transactionEntity.getAmount());
     }
+
     private void validateTransferConditions(AccountEntity sourceAccount, AccountEntity targetAccount) {
         // Case 1: If the source account belongs to the same user as the target account
         if (sourceAccount.getUser().equals(targetAccount.getUser())) {
@@ -161,8 +161,7 @@ public class TransactionService {
         sourceAccount.setBalance(sourceAccount.getBalance() - amount);
         targetAccount.setBalance(targetAccount.getBalance() + amount);
 
-        // Create and save transaction record for the source account
-        TransactionEntity sourceTransaction = TransactionEntity.builder()
+        final TransactionEntity sourceTransaction = TransactionEntity.builder()
                 .account(sourceAccount)
                 .targetAccount(targetAccount)
                 .transactionType("TRANSFER")
@@ -171,8 +170,7 @@ public class TransactionService {
                 .build();
         transactionRepository.save(sourceTransaction);
 
-        // Create and save transaction record for the target account
-        TransactionEntity targetTransaction = TransactionEntity.builder()
+        final TransactionEntity targetTransaction = TransactionEntity.builder()
                 .account(targetAccount)
                 .targetAccount(sourceAccount) // log the source account as the source in the description
                 .transactionType("TRANSFER")
@@ -203,11 +201,5 @@ public class TransactionService {
     private AccountEntity getAccountByNumberAndUserId(String accountNumber, Long userId) {
         return accountRepository.findByAccountNumberAndUserId(accountNumber, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with account number: " + accountNumber + " for userId: " + userId));
-    }
-
-    private void validateUserExistsByUsername(String username) {
-        if (!userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("User not found with username: " + username);
-        }
     }
 }

@@ -74,7 +74,7 @@ public class UserService {
         String userId = extractUserIdFromToken(authorizationHeader);
         log.debug("Attempting to update user with ID: {}", userId);
 
-        UserEntity existingUser = userRepository.findById(Long.valueOf(userId))
+        final UserEntity existingUser = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
         updateUserFields(existingUser, request);
