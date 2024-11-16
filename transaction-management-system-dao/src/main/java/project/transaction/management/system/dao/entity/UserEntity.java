@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @ToString
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity {
 
     @Id
