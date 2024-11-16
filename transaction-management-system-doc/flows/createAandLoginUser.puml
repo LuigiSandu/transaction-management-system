@@ -1,0 +1,14 @@
+@startuml
+
+actor User
+entity "Users" as System
+
+User -> System : POST /transaction-management-system/api/v1/users/register\n(Register User)
+|||
+System --> User : 201 (User Created)
+|||
+User -> System : POST /transaction-management-system/api/v1/users/login\n(Login User)
+|||
+System --> User : 200 (JWT Token)
+
+@enduml

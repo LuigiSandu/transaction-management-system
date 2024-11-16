@@ -1,0 +1,44 @@
+@startuml
+
+class UserEntity {
+    +Long id
+    +String username
+    +String password
+    +String email
+    +LocalDateTime createdAt
+    +int tokenVersion
+    +LocalDateTime updatedAt
+}
+
+class AccountEntity {
+    +Long id
+    +String accountNumber
+    +String accountType
+    +Double balance
+    +LocalDateTime createdAt
+    +String name
+    +LocalDateTime updatedAt
+}
+
+class Role {
+    +Long id
+    +String name
+}
+
+class TransactionEntity {
+    +Long id
+    +String transactionType
+    +Double amount
+    +LocalDateTime timestamp
+    +String description
+}
+
+' Relationships with explicit cardinality
+UserEntity --> "*" AccountEntity : accounts
+AccountEntity --> "1" UserEntity : user
+AccountEntity --> "*" TransactionEntity : transactions
+TransactionEntity --> "1" AccountEntity : sourceAccount
+TransactionEntity --> "0..1" AccountEntity : targetAccount
+UserEntity *--> "*" Role : roles
+
+@enduml

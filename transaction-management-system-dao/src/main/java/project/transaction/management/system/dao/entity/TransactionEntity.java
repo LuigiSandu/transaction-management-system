@@ -23,7 +23,7 @@ public class TransactionEntity {
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
-    private AccountEntity account; // Source account for the transaction
+    private AccountEntity sourceAccount; // Source account for the transaction
 
     @ManyToOne
     @JoinColumn(name = "target_account_id", nullable = true) // Nullable for non-transfer transactions
