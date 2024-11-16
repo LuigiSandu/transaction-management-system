@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static project.transaction.management.system.AbstractTest.*;
+import static project.transaction.management.system.service.helper.AbstractTest.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

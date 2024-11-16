@@ -1,4 +1,4 @@
-package project.transaction.management.system;
+package project.transaction.management.system.service.helper;
 
 import project.transaction.management.system.api.resource.account.AccountRequestResource;
 import project.transaction.management.system.api.resource.account.AccountResponseResource;

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import project.transaction.management.system.TransactionHelper;
 import project.transaction.management.system.api.resource.transaction.TransactionRequestResource;
 import project.transaction.management.system.api.resource.transaction.TransactionResponseResource;
 import project.transaction.management.system.config.JWTGenerator;
@@ -17,13 +16,14 @@ import project.transaction.management.system.dao.repository.AccountRepository;
 import project.transaction.management.system.dao.repository.TransactionReposittory;
 import project.transaction.management.system.dao.repository.UserRepository;
 import project.transaction.management.system.mapper.TransactionMapper;
+import project.transaction.management.system.service.helper.TransactionHelper;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
-import static project.transaction.management.system.AbstractTest.AUTHORIZATION_HEADER;
+import static project.transaction.management.system.service.helper.AbstractTest.AUTHORIZATION_HEADER;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
