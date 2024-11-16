@@ -12,3 +12,13 @@ jpa:
   properties:
     hibernate.dialect: org.hibernate.dialect.MySQLDialect  # Use MySQLDialect as MySQL8Dialect is deprecated
     format_sql: true  # This formats the SQL output nicely in the logs
+
+info:
+  app:
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
+    build-timestamp: '@maven.build.timestamp@'
+    java:
+      version: ${java.version}
+      runtime: ${java.vm.name}

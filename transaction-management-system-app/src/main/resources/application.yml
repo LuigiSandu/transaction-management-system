@@ -12,3 +12,14 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.MySQLDialect
 
+
+info:
+  app:
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
+    build-timestamp: '@maven.build.timestamp@'
+    java:
+      version: ${java.version}
+      runtime: ${java.vm.name}
+

@@ -20,9 +20,9 @@ class AccountControllerIntegrationTest extends AbstractAccountIntegrationTest {
 
         final String authHeader = loginUser(USERNAME, PASSWORD);
 
-        AccountRequestResource accountRequest = createAccountRequest(authHeader).getBody();
+        final AccountRequestResource accountRequest = createAccountRequest(authHeader).getBody();
 
-        ResponseEntity<AccountResponseResource> response = sendCreateAccountRequest(accountRequest, authHeader);
+        final ResponseEntity<AccountResponseResource> response = sendCreateAccountRequest(accountRequest, authHeader);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());

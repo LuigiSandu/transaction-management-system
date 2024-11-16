@@ -20,7 +20,7 @@ class UserControllerIntegrationTest extends AbstractUserIntegrationTest {
     }
 
     @Test
-    void testAuthenticateUser() {
+    void testLoginUser() {
         createUser("username1", "Password@1", "username1@example.com");
 
         ResponseEntity<String> loginResponse = authenticateUser("username1", "Password@1");
