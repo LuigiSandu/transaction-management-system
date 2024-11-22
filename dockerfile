@@ -30,7 +30,7 @@ COPY ${JAR_FILE} /app/transaction-management-system.jar
 
 # Copy your specific YAML configuration file to the container
 # COPY transaction-management-system-app/src/main/resources/application.yml /app/application.yml
-COPY transaction-management-system-app/src/main/resources/application-local.yml /app/application.yml
+COPY transaction-management-system-app/src/main/resources/application-aws.yml /app/application.yml
 
 # Switch back to root to adjust permissions
 USER root

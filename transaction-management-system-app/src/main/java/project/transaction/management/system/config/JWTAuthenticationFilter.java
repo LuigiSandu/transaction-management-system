@@ -23,8 +23,7 @@ import project.transaction.management.system.exception.ExceptionResponse;
 import java.io.IOException;
 import java.util.UUID;
 
-import static project.transaction.management.system.config.SecurityConstants.LOGIN_PATH;
-import static project.transaction.management.system.config.SecurityConstants.REGISTER_PATH;
+import static project.transaction.management.system.config.SecurityConstants.*;
 
 @Slf4j
 @Component
@@ -42,11 +41,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
-        if (request.getRequestURI().startsWith("/actuator")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        if (StringUtils.hasText(token) || ((!request.getRequestURI().contains(LOGIN_PATH)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
+
+        if (StringUtils.hasText(token) || ((!request.getRequestURI().contains(LOGIN_PATH)) &&
+                (!request.getRequestURI().contains(ACTUATOR)) &&
+                (!request.getRequestURI().contains(FAVICON)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
             try {
                 if (tokenGenerator.validateToken(token)) {
                     String id = tokenGenerator.getSubjectFromJwt(token); // User ID

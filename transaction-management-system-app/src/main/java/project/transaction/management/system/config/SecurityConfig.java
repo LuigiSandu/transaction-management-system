@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/transaction-management-system/api/v1/users/register").permitAll()
                         .requestMatchers("/transaction-management-system/api/v1/users/login").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/transaction-management-system/api/v1/users/update").authenticated()
                         .requestMatchers("/transaction-management-system/api/v1/accounts/create").authenticated()
                         .requestMatchers("/transaction-management-system/api/v1/accounts/**").authenticated()
