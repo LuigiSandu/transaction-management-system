@@ -27,7 +27,4 @@ public class UserRequestResource {
     @JsonProperty("email")
     @Pattern(regexp = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Invalid email address.")
     private String email;
-
-    @JsonProperty("enum_test")
-    private EnumTest enumTest;
 }

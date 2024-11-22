@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractAccountIntegrationTest extends AbstractIntegrationTest {
 
-    public static final String USERNAME = "username1";
+    public static final String USERNAME = "username21";
     public static final String PASSWORD = "Password@1";
     protected static final String ACCOUNT_NUMBER = "1234567890";
     protected static final String ACCOUNT_TYPE = AccountType.CHECKING.name();
@@ -26,7 +26,7 @@ public abstract class AbstractAccountIntegrationTest extends AbstractIntegration
         UserRequestResource userRequest = UserRequestResource.builder()
                 .username(username)
                 .password(password)
-                .email("email1@gmail.com")
+                .email("email21@gmail.com")
                 .build();
 
         userService.createUser(userRequest);
