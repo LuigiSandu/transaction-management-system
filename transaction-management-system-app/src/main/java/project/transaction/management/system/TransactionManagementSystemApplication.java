@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(
         scanBasePackages = {"project.transaction.management.system",
                 "project.transaction.management.system.dao"})
-//@EnableJpaRepositories(basePackages = "project.transaction.management.system.dao")
+@EnableJpaRepositories(basePackages = "project.transaction.management.system.dao")
 public class TransactionManagementSystemApplication {
 
     public static void main(String[] args) {

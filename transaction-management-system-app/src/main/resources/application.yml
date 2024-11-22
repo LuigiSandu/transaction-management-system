@@ -32,3 +32,6 @@ info:
       version: ${java.version}
       runtime: ${java.vm.name}
 
+  profiles:
+    active: dev
+
