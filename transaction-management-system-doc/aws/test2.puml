@@ -1,0 +1,34 @@
+@startuml User Creation Flow - Images
+' Uncomment the line below for "dark mode" styling
+'!$AWS_DARK = true
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v18.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/Compute/ElasticContainerService.puml
+!include AWSPuml/ApplicationIntegration/APIGateway.puml
+!include AWSPuml/Database/RDS.puml
+!include AWSPuml/General/User.puml
+
+' Hide the bottom boxes / Use filled triangle arrowheads
+hide footbox
+skinparam style strictuml
+
+skinparam MaxMessageSize 200
+
+participant "$UserIMG()\nUser" as user
+box AWS Cloud
+' Instead of using ...Participant(), native creole img tags can be used
+participant "$APIGatewayIMG()\nUser Registration API\nPOST /users/register" as api << REST API >>
+participant "$ECSIMG()\nAWS ECS\nProcess Registration" as ecs << containerized app >>
+participant "$RDSIMG()\nUser Database" as rds << on-demand >>
+endbox
+
+' Use shortcut syntax for activation with colored lifelines and return keyword
+user -> api++ $AWSColor(ApplicationIntegration): <$Callout_1> Register User\l<$Callout_SP> POST /users/register
+api -> ecs++ $AWSColor(Compute): <$Callout_2> Forward registration details
+ecs -> rds++ $AWSColor(Database): <$Callout_3> Store user data in RDS
+rds -> ecs: Confirm user data saved
+ecs -> api: Return success (User Created)
+api -> user: Return 201 (User Created)
+
+@enduml

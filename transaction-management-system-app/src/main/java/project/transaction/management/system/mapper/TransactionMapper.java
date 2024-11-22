@@ -10,7 +10,7 @@ import project.transaction.management.system.dao.entity.TransactionEntity;
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
-    @Mapping(target = "sourceAccountNumber", source = "account.accountNumber")
+    @Mapping(target = "sourceAccountNumber", source = "sourceAccount.accountNumber")
     @Mapping(target = "targetAccountNumber", source = "targetAccount.accountNumber")
     TransactionResponseResource fromEntity(TransactionEntity source);
 

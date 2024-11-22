@@ -43,7 +43,7 @@ public class AccountEntity {
     @JoinColumn(name = "user_id", nullable = false) // Foreign key column in account table
     private UserEntity user;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sourceAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TransactionEntity> transactions = new ArrayList<>();
 
     // Optional: Transactions where this account is the target (for transfers)

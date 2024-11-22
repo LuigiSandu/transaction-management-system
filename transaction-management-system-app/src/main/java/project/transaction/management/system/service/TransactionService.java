@@ -39,7 +39,7 @@ public class TransactionService {
             case "DEPOSIT":
                 processDeposit(accountEntity, request.getAmount());
                 transactionEntity = TransactionEntity.builder()
-                        .account(accountEntity)  // Set the source account for the deposit
+                        .sourceAccount(accountEntity)  // Set the source account for the deposit
                         .transactionType("DEPOSIT")
                         .amount(request.getAmount())
                         .description(request.getDescription())
@@ -49,7 +49,7 @@ public class TransactionService {
             case "WITHDRAWAL":
                 processWithdrawal(accountEntity, request.getAmount());
                 transactionEntity = TransactionEntity.builder()
-                        .account(accountEntity)  // Set the source account for the withdrawal
+                        .sourceAccount(accountEntity)  // Set the source account for the withdrawal
                         .transactionType("WITHDRAWAL")
                         .amount(request.getAmount())
                         .description(request.getDescription())
@@ -59,7 +59,7 @@ public class TransactionService {
             case "TRANSFER":
                 AccountEntity targetAccountEntity = getAccountByNumber(request.getTargetAccountNumber());
                 transactionEntity = TransactionEntity.builder()
-                        .account(accountEntity)   // Set the source account for the transfer
+                        .sourceAccount(accountEntity)   // Set the source account for the transfer
                         .targetAccount(targetAccountEntity) // Set the target account for the transfer
                         .transactionType("TRANSFER")
                         .amount(request.getAmount())
@@ -83,7 +83,7 @@ public class TransactionService {
         String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
         log.debug("Received request to get all transactions for user with ID: {}", userId); // Log the incoming request
         validateUserExistsById(Long.parseLong(userId));
-        List<TransactionEntity> transactions = transactionRepository.findByAccount_User_Id(Long.parseLong(userId));
+        List<TransactionEntity> transactions = transactionRepository.findBySourceAccount_User_Id(Long.parseLong(userId));
         log.info("Successfully retrieved {} transactions for user ID: {}", transactions.size(), userId);
         return transactions.stream()
                 .map(mapper::fromEntity)
@@ -166,7 +166,7 @@ public class TransactionService {
         targetAccount.setBalance(targetAccount.getBalance() + amount);
 
         final TransactionEntity sourceTransaction = TransactionEntity.builder()
-                .account(sourceAccount)
+                .sourceAccount(sourceAccount)
                 .targetAccount(targetAccount)
                 .transactionType("TRANSFER")
                 .amount(amount)
@@ -175,7 +175,7 @@ public class TransactionService {
         transactionRepository.save(sourceTransaction);
 
         final TransactionEntity targetTransaction = TransactionEntity.builder()
-                .account(targetAccount)
+                .sourceAccount(targetAccount)
                 .targetAccount(sourceAccount) // log the source account as the source in the description
                 .transactionType("TRANSFER")
                 .amount(amount)

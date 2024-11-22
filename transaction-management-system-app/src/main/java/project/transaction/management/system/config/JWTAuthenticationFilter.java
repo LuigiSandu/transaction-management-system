@@ -50,11 +50,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                     UserDetails userDetails = customUserDetailsService.loadUserById(id);
 
-                    // Fetch user's current token version from the database
                     UserEntity userEntity = userRepository.findById(Long.valueOf(id))
                             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-                    // Compare token's version with the user's current version
                     if (userEntity.getTokenVersion() != tokenVersion) {
                         throw new AuthenticationCredentialsNotFoundException("Token version mismatch. Please re-authenticate.");
                     }
@@ -73,10 +71,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void handleJwtException(Exception ex, HttpServletResponse response) {
-        // Log the error
         log.info("Authentication error: {}", ex.getMessage(), ex);
 
-        // Create the ExceptionResponse object
         String errorId = UUID.randomUUID().toString(); // Generate a unique ID for the error response
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .code("AUTH_CREDENTIALS_NOT_FOUND") // Custom error code for clarity
@@ -85,7 +81,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 .build();
 
         try {
-            // Convert the exception response to JSON
             String jsonResponse = objectMapper.writeValueAsString(exceptionResponse);
 
             // Set response properties

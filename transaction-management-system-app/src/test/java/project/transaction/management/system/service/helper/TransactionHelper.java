@@ -25,7 +25,7 @@ public class TransactionHelper {
 
     public static TransactionEntity createTransaction(AccountEntity account, AccountEntity targetAccount, String transactionType, double amount, String description) {
         return TransactionEntity.builder()
-                .account(account)
+                .sourceAccount(account)
                 .targetAccount(targetAccount)
                 .transactionType(transactionType)
                 .amount(amount)
