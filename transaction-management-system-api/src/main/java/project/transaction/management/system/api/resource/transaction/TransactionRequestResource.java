@@ -9,8 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import project.transaction.management.system.api.validation.EnumOf;
 
-import java.time.LocalDate;
-
 
 @Data
 @NoArgsConstructor
@@ -37,8 +35,7 @@ public class TransactionRequestResource {
     private String description;
 
     @JsonProperty("target_account_number")
-    @Size(min = 8, max = 20, message = "Account number must be between 8 and 20 characters")
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Account number must be alphanumeric")
+
     private String targetAccountNumber;
 
 }

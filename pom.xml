@@ -65,6 +65,12 @@
 
         <!--OTHER-->
         <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sns</artifactId>
+            <version>1.12.385</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.12.6</version> <!-- Or the latest version available -->

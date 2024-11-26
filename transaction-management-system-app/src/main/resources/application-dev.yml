@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create  # Set to 'update' to keep existing data in the database and only update the schema if needed
+      ddl-auto: create-drop  # Set to 'update' to keep existing data in the database and only update the schema if needed
     show-sql: true
     properties:
       hibernate.dialect: org.hibernate.dialect.MySQLDialect
