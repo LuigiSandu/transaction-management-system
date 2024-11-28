@@ -36,14 +36,14 @@ public class JWTGenerator {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("tokenVersion", Integer.class); // Extract tokenVersion from claims
+        return claims.get("tokenVersion", Integer.class);
     }
 
     public String getSubjectFromJwt(String token) {
-        Claims claims = Jwts.parser() // Use parserBuilder() to create the parser
-                .setSigningKey(secretKey) // Set the signing key for validation
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJws(token) // Parse the token
+                .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
     }
@@ -65,6 +65,6 @@ public class JWTGenerator {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject(); // This returns the user ID if it is set as the subject
+        return claims.getSubject(); 
     }
 }
