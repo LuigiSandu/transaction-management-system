@@ -52,7 +52,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // BCrypt is a strong password encoding algorithm
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

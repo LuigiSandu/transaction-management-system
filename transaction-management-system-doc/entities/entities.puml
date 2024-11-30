@@ -1,5 +1,6 @@
 @startuml
-
+skinparam width 800
+scale 1920*1080
 class UserEntity {
     +Long id
     +String username

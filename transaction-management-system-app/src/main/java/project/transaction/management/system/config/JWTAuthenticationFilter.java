@@ -47,8 +47,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 (!request.getRequestURI().contains(FAVICON)) && (!request.getRequestURI().contains(REGISTER_PATH)))) {
             try {
                 if (tokenGenerator.validateToken(token)) {
-                    String id = tokenGenerator.getSubjectFromJwt(token); // User ID
-                    int tokenVersion = tokenGenerator.getTokenVersionFromJwt(token); // Retrieve token version from JWT
+                    String id = tokenGenerator.getSubjectFromJwt(token);
+                    int tokenVersion = tokenGenerator.getTokenVersionFromJwt(token);
 
                     UserDetails userDetails = customUserDetailsService.loadUserById(id);
 
@@ -75,17 +75,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private void handleJwtException(Exception ex, HttpServletResponse response) {
         log.info("Authentication error: {}", ex.getMessage(), ex);
 
-        String errorId = UUID.randomUUID().toString(); // Generate a unique ID for the error response
+        String errorId = UUID.randomUUID().toString();
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .code("AUTH_CREDENTIALS_NOT_FOUND") // Custom error code for clarity
-                .message("Invalid or missing JWT token") // Message from the exception
-                .id(errorId) // Unique error ID
+                .code("AUTH_CREDENTIALS_NOT_FOUND")
+                .message("Invalid or missing JWT token")
+                .id(errorId)
                 .build();
 
         try {
             String jsonResponse = objectMapper.writeValueAsString(exceptionResponse);
 
-            // Set response properties
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write(jsonResponse);
