@@ -27,7 +27,6 @@ public class GlobalExceptionHandler {
 
     private static final String ERROR_RESPONSE_WITH_ID = "Error response: \"{}\" with id {}";
 
-    // Handle validation errors
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValid(final MethodArgumentNotValidException exception) {
@@ -35,7 +34,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errors);
     }
 
-    // Handle illegal argument exceptions
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(final IllegalArgumentException exception) {
@@ -43,14 +41,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
-    // Handle NumberFormatException
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<ExceptionResponse> handleNumberFormatException(final NumberFormatException exception) {
         String errorMessage = "Invalid number format: " + exception.getMessage();
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
-    // Handle AccountNotFoundException
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleAccountNotFoundException(final AccountNotFoundException exception) {
@@ -59,7 +55,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    // Generic exception handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGenericException(final Exception exception) {
         String errorMessage = "An unexpected error occurred";
@@ -68,7 +63,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    // Utility method to build error response
     private ResponseEntity<ExceptionResponse> buildErrorResponse(HttpStatus status, String message) {
         String uuid = UUID.randomUUID().toString();
         log.warn(ERROR_RESPONSE_WITH_ID, message, uuid); // Log at WARN level for errors
@@ -81,7 +75,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // Build error messages for validation errors
     private static String buildErrorMessages(MethodArgumentNotValidException exception) {
         Set<String> errorFields = new TreeSet<>();
         for (FieldError error : exception.getBindingResult().getFieldErrors()) {

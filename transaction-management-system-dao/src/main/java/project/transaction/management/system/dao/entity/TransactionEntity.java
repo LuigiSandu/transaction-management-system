@@ -18,34 +18,34 @@ import java.time.LocalDateTime;
 public class TransactionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
-    private AccountEntity sourceAccount; // Source account for the transaction
+    private AccountEntity sourceAccount;
 
     @ManyToOne
-    @JoinColumn(name = "target_account_id", nullable = true) // Nullable for non-transfer transactions
-    private AccountEntity targetAccount; // Target account for transfers
+    @JoinColumn(name = "target_account_id", nullable = true)
+    private AccountEntity targetAccount;
 
-    @Column(name = "transaction_type", nullable = false) // Ensuring transactionType cannot be null
+    @Column(name = "transaction_type", nullable = false)
     @NotBlank(message = "Transaction type is required")
     private String transactionType;
 
-    @Column(name = "amount", nullable = false) // Ensuring amount cannot be null
+    @Column(name = "amount", nullable = false)
     @NotNull(message = "Amount is required")
     private Double amount;
 
-    @Column(name = "timestamp", nullable = false) // Ensuring timestamp cannot be null
+    @Column(name = "timestamp", nullable = false)
     @NotNull(message = "Timestamp is required")
-    private LocalDateTime timestamp; // Use LocalDateTime for precise date and time tracking
+    private LocalDateTime timestamp;
 
-    @Column(name = "description") // Description can be optional
+    @Column(name = "description")
     private String description;
 
     @PrePersist
     protected void onCreate() {
-        this.timestamp = LocalDateTime.now(); // Automatically set the timestamp when the transaction is created
+        this.timestamp = LocalDateTime.now();
     }
 }

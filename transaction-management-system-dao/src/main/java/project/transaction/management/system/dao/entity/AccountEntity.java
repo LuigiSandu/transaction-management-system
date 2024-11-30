@@ -21,26 +21,26 @@ public class AccountEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented ID
     private Long id;
 
-    @Column(nullable = false, unique = true) // Account number cannot be null and must be unique
+    @Column(nullable = false, unique = true)
     private String accountNumber;
 
-    @Column(nullable = false) // Account type cannot be null
+    @Column(nullable = false)
     private String accountType;
 
-    @Column(nullable = false) // Balance cannot be null
+    @Column(nullable = false)
     private Double balance;
 
-    @Column(name = "created_at", updatable = false) // Column mapping for createdAt
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false) // Account type cannot be null
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "updated_at") // Column mapping for updatedAt
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Many accounts to one user
-    @JoinColumn(name = "user_id", nullable = false) // Foreign key column in account table
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
     @OneToMany(mappedBy = "sourceAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -52,7 +52,7 @@ public class AccountEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now(); // Set the current time when the record is created
+        this.createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
