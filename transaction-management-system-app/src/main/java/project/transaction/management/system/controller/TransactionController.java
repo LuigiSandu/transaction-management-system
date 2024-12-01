@@ -29,7 +29,7 @@ public class TransactionController {
         final TransactionResponseResource response = service.createTransaction(request, authorizationHeader);
             NotificationService.completeTransaction(response);
                     log.info("Successfully created transaction with ID: {}", response.getId());
-        return new ResponseEntity<>(response, HttpStatus.CREATED); // Return HTTP 201 Created
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 }

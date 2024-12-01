@@ -1,5 +1,8 @@
 package project.transaction.management.system.config;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,10 +14,6 @@ import org.springframework.stereotype.Service;
 import project.transaction.management.system.dao.entity.Role;
 import project.transaction.management.system.dao.entity.UserEntity;
 import project.transaction.management.system.dao.repository.UserRepository;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

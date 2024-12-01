@@ -39,7 +39,7 @@ public class TransactionService {
             case "DEPOSIT":
                 processDeposit(accountEntity, request.getAmount());
                 transactionEntity = TransactionEntity.builder()
-                        .sourceAccount(accountEntity)  // Set the source account for the deposit
+                        .sourceAccount(accountEntity)
                         .transactionType("DEPOSIT")
                         .amount(request.getAmount())
                         .description(request.getDescription())
@@ -49,7 +49,7 @@ public class TransactionService {
             case "WITHDRAWAL":
                 processWithdrawal(accountEntity, request.getAmount());
                 transactionEntity = TransactionEntity.builder()
-                        .sourceAccount(accountEntity)  // Set the source account for the withdrawal
+                        .sourceAccount(accountEntity)
                         .transactionType("WITHDRAWAL")
                         .amount(request.getAmount())
                         .description(request.getDescription())
@@ -59,29 +59,27 @@ public class TransactionService {
             case "TRANSFER":
                 AccountEntity targetAccountEntity = getAccountByNumber(request.getTargetAccountNumber());
                 transactionEntity = TransactionEntity.builder()
-                        .sourceAccount(accountEntity)   // Set the source account for the transfer
-                        .targetAccount(targetAccountEntity) // Set the target account for the transfer
+                        .sourceAccount(accountEntity)
+                        .targetAccount(targetAccountEntity)
                         .transactionType("TRANSFER")
                         .amount(request.getAmount())
                         .description(request.getDescription())
                         .build();
-                return processTransfer(transactionEntity, accountEntity, targetAccountEntity); // Directly return the transfer response
+                return processTransfer(transactionEntity, accountEntity, targetAccountEntity);
 
             default:
                 throw new IllegalArgumentException("Invalid transaction type: " + request.getTransactionType());
         }
 
-        // Save the transaction and update the account balance for DEPOSIT and WITHDRAWAL
         transactionEntity = transactionRepository.save(transactionEntity);
-        accountRepository.save(accountEntity); // Ensure the account is saved with updated balance
+        accountRepository.save(accountEntity);
 
-        // Return the response resource
         return mapper.fromEntity(transactionEntity);
     }
 
     public List<TransactionResponseResource> getAllTransactionsByUserId(String authorizationHeader) {
         String userId = jwtGenerator.getUserIdFromToken(authorizationHeader.substring(7));
-        log.debug("Received request to get all transactions for user with ID: {}", userId); // Log the incoming request
+        log.debug("Received request to get all transactions for user with ID: {}", userId);
         validateUserExistsById(Long.parseLong(userId));
         List<TransactionEntity> transactions = transactionRepository.findBySourceAccount_User_Id(Long.parseLong(userId));
         log.info("Successfully retrieved {} transactions for user ID: {}", transactions.size(), userId);
@@ -108,7 +106,7 @@ public class TransactionService {
         }
     }
 
-    // Process the deposit (add the amount to the balance)
+
     private void processDeposit(AccountEntity accountEntity, Double amount) {
         if (!"CHECKING".equalsIgnoreCase(accountEntity.getAccountType())) {
             throw new IllegalArgumentException("Deposits can only be made to checking accounts.");
@@ -117,7 +115,7 @@ public class TransactionService {
         log.info("Deposited {} to account {}", amount, accountEntity.getAccountNumber());
     }
 
-    // Process the withdrawal (subtract the amount from the balance)
+
     private void processWithdrawal(AccountEntity accountEntity, Double amount) {
         if (!"CHECKING".equalsIgnoreCase(accountEntity.getAccountType())) {
             throw new IllegalArgumentException("Withdrawals can only be made from checking accounts.");
@@ -137,16 +135,14 @@ public class TransactionService {
             throw new IllegalArgumentException("Insufficient funds for transfer.");
         }
 
-        // Perform the transfer and create transaction records for both accounts
+
         return executeTransfer(sourceAccount, targetAccount, transactionEntity.getAmount());
     }
 
     private void validateTransferConditions(AccountEntity sourceAccount, AccountEntity targetAccount) {
-        // Case 1: If the source account belongs to the same user as the target account
         if (sourceAccount.getUser().equals(targetAccount.getUser())) {
             log.debug("Transferring between accounts of the same user: {} -> {}", sourceAccount.getAccountNumber(), targetAccount.getAccountNumber());
         }
-        // Case 2: If the source account is a checking account and the target account is also a checking account of a different user
         else if ("CHECKING".equalsIgnoreCase(sourceAccount.getAccountType()) && "CHECKING".equalsIgnoreCase(targetAccount.getAccountType())) {
             log.debug("Transferring from one user's checking account to another user's checking account.");
         } else {
@@ -161,7 +157,6 @@ public class TransactionService {
     }
 
     private TransactionResponseResource executeTransfer(AccountEntity sourceAccount, AccountEntity targetAccount, Double amount) {
-        // Update the balances
         sourceAccount.setBalance(sourceAccount.getBalance() - amount);
         targetAccount.setBalance(targetAccount.getBalance() + amount);
 
@@ -183,7 +178,6 @@ public class TransactionService {
                 .build();
         transactionRepository.save(targetTransaction);
 
-        // Log the transfer operation
         log.info("Transferred {} from account {} to account {}", amount, sourceAccount.getAccountNumber(), targetAccount.getAccountNumber());
 
         return TransactionResponseResource.builder()

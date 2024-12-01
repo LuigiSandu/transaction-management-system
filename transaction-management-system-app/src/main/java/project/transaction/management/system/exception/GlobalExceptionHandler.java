@@ -62,7 +62,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
 
-
     private ResponseEntity<ExceptionResponse> buildErrorResponse(HttpStatus status, String message) {
         String uuid = UUID.randomUUID().toString();
         log.warn(ERROR_RESPONSE_WITH_ID, message, uuid); // Log at WARN level for errors
