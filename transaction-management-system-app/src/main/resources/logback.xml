@@ -33,6 +33,39 @@
             <appender-ref ref="consoleAppender"/>
         </root>
     </springProfile>
+    <springProfile name="aws">
+        <springProperty scope="context" name="serviceName" source="info.app.name"/>
+        <springProperty scope="context" name="serviceVersion" source="info.app.version"/>
+        <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+        <variable name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}"/>
+        <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeContext>false</includeContext>
+                <includeCallerData>true</includeCallerData>
+                <timeZone>UTC</timeZone>
+                <customFields>{"serviceName": "${serviceName}", "serviceVersion": "${serviceVersion}"}</customFields>
+                <fieldNames>
+                    <timestamp>@timestamp</timestamp>
+                    <level>@level</level>
+                    <thread>thread</thread>
+                    <logger>[ignore]</logger>
+                    <version>[ignore]</version>
+                    <levelValue>[ignore]</levelValue>
+                    <callerFile>[ignore]</callerFile>
+                    <callerClass>className</callerClass>
+                    <callerMethod>methodName</callerMethod>
+                    <callerLine>lineNumber</callerLine>
+                </fieldNames>
+                <mdcKeyFieldName>X-Correlation-ID=correlationId</mdcKeyFieldName>
+            </encoder>
+        </appender>
+        <logger name="consoleLogger" additivity="false" level="${LOG_LEVEL}">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="consoleAppender"/>
+        </root>
+    </springProfile>
     <springProfile name="dev">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>

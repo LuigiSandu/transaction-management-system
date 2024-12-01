@@ -13,6 +13,12 @@ jpa:
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
     format_sql: true
 
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:roles.sql
+
 info:
   app:
     name: '@project.name@'
