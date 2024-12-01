@@ -18,7 +18,7 @@ import java.util.List;
 public class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incremented ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -46,7 +46,6 @@ public class AccountEntity {
     @OneToMany(mappedBy = "sourceAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TransactionEntity> transactions = new ArrayList<>();
 
-    // Optional: Transactions where this account is the target (for transfers)
     @OneToMany(mappedBy = "targetAccount", cascade = CascadeType.ALL)
     private List<TransactionEntity> receivedTransactions;
 
