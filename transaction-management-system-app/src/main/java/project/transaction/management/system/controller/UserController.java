@@ -52,10 +52,10 @@ public class UserController {
         final UserResponseResource updatedUser = service.updateUser(request, authorizationHeader);
 
         log.info("Successfully updated User with ID: {}", updatedUser.getId());
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // Return OK for successful update
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
-    @GetMapping("/transactions/{userId}")
+    @GetMapping("/transactions")
     public ResponseEntity<List<TransactionResponseResource>> getAllTransactions(@RequestHeader("Authorization") String authorizationHeader) {
         final List<TransactionResponseResource> transactions = transactionService.getAllTransactionsByUserId(authorizationHeader);
         return new ResponseEntity<>(transactions, HttpStatus.OK);

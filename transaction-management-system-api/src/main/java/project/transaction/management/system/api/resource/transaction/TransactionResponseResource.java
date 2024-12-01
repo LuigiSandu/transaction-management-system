@@ -1,13 +1,11 @@
 package project.transaction.management.system.api.resource.transaction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 
 @Data
@@ -16,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class TransactionResponseResource {
 
-    private Long id; // ID of the transaction
+    private Long id;
 
     @JsonProperty("source_account_number")
     private String sourceAccountNumber;
@@ -25,12 +23,12 @@ public class TransactionResponseResource {
     private String targetAccountNumber;
 
     @JsonProperty("transaction_type")
-    private String transactionType; // The type of transaction
+    private String transactionType;
 
-    private Double amount; // The amount of the transaction
+    private Double amount;
 
-    private LocalDateTime timestamp; // The timestamp of the transaction
+    private LocalDateTime timestamp;
 
     @JsonProperty("description")
-    private String description; // Description of the transaction
+    private String description;
 }

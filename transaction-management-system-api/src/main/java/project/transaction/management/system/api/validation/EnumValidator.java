@@ -15,7 +15,7 @@ public class EnumValidator implements ConstraintValidator<EnumOf, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) return true; // Use @NotNull on the field if null values should be rejected
+        if (value == null) return true;
         return Arrays.stream(enumValues).anyMatch(e -> e.name().equalsIgnoreCase(value));
     }
 }

@@ -30,7 +30,7 @@ public class AccountResponseResource {
     private Double balance;
 
     @JsonProperty("updated_at")
-    private LocalDateTime updatedAt; // Timestamp of when the account was last updated
+    private LocalDateTime updatedAt;
 
 
 }
